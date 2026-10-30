@@ -1,0 +1,7 @@
+- GPUs have thousands of cores optimized for parallel computation, making them ideal for the matrix multiplications that dominate neural network training.
+- VRAM (Video RAM) is the dedicated memory on a GPU. It limits the size of models and batch sizes you can use during training, separate from your systems's main RAM.
+
+- CUDA: NVIDIA's parallel computing platform that lets you run code on the GPU
+- VRAM: Video RAM on the GPU, separate from system RAM. Limits model size.
+- fp16: 16-bit floating point, uses half the memory of fp32 with minimal accuracy loss.
+- Tensor Core: specialized GPU cores for matrix multiplication, 4-8x faster than regular cores.
