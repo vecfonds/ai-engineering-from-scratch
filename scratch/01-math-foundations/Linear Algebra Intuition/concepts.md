@@ -1,3 +1,5 @@
+Link: https://chatgpt.com/g/g-p-6ae48c5e7b6881919696a5e7ebc3a405-ai-engineer/c/6ae48c81-8674-83ec-991a-49f5364929df
+
 - Every AI model is just matrix math wearning a fancy hat
 Mọi mô hinhf AI chỉ là toán học ma trận đội 1 chiếc mũ lạ mắt
 
@@ -328,3 +330,148 @@ PCA tìm các hướng biến thiên chính để biểu diễn dữ liều bằ
 5.6.3 LoRA - Low-Rank Adaptation
 Trong Fine-tuning LLM, LoRA tận dụng ý tưởng ma trận có hạng thấp để giảm số lượng tham số cần huấn luyện.
 Loravbieeur diễn cập nhật các trọng số bằng tích 2 ma trận nhỏ, có rank thấp.
+
+6. Projection (phép chiếu vector)
+Projection là phép chiếu một vector lên một vector khác hoặc lên một không gian con.
+
+6.1 Projection là gì?
+Projection giúp tìm thành phần của 1 vector nằm theo hướng của vector khác.
+
+Chiếu vector a lên vector b nghĩa là tìm "phần của a nằm dọc theo hướng của b". Hình dung ánh nắng chiếu thẳng từ trên xuống: bóng của a trên đường thẳng chứa b chính là hình chiếu.
+
+    proj_b(a) = (a.b/(b.b))b
+Trong đó:
+- a.b (tích vô hướng): đo mức độ a và b "cùng hướng".
+- b.b = |b|2: để chuẩn hoá theo độ dài của b.
+- tỉ số (a.b)/(b.b) là một số (hệ số co giãn), nhân với b để ra vector nằm trên đường thẳng của b.
+
+
+Residual (phần dư):
+- a-proj_b(a): là phần còn lại của a sau khi lấy đi thành phần dọc theo b. Nó vuông góc với b. Nhờ vậy a được tách thành 2 phần:
+    a = (phần song song với b) + (phần vuông góc với b)
+
+Đây là phân rã trực giao, nền tảng của bài toán bình phương tối thiểu (least squares).
+
+Vì sao quan trọng trong ML:
+- Linear regression: vector y thường không nằm trong không gian cột của X. Ta tìm điểm gần y nhất trong không gian cột đó, và điểm gần nhất chính là hình chiếu của y. Phần dư vuông góc với không gian cột, và đó là điều kiện sinh ra phương trình chuẩn (XᵀXw = Xᵀy).
+- PCA: chiếu dữ liệu lên các hướng có phương sai lớn nhất.
+- Attention trong Transformer: tích vô hướng giữa query và key về bản chất do mức độ "chiếu" của vector này lên vector kia.
+
+
+Ví dụ trong ảnh
+
+a = [3, 4], b = [1, 0] (trục x).
+
+a · b = 3·1 + 4·0 = 3
+b · b = 1·1 + 0·0 = 1
+proj = (3/1)·[1, 0] = [3, 0]
+
+Phép chiếu giữ lại thành phần x (3) và bỏ thành phần y (4). Phần dư là [0, 4], vuông góc với b đúng như lý thuyết.
+
+Liên hệ với giảm chiều
+
+Đây chính là giảm chiều dữ liệu ở dạng đơn giản nhất: từ vector 2 chiều [3, 4] chỉ giữ lại 1 chiều [3]. PCA làm điều tương tự, nhưng thay vì chọn trục x, nó chọn hướng giữ lại nhiều thông tin (phương sai) nhất.
+
+
+
+6.2 Scalar Projection - độ dài hình chiếu
+Scalar Projection cho biết độ dài có dấu của hình chiếu vector a lên hướng vector b.
+Lưu ý: Scalar Projection có thể âm nếu góc giữa hai vector là góc tù.
+
+6.3 Vector Projection - Vector hình chiếu
+6.4 Projection khi vector không nằm trên trục toạ độ
+6.5 Residual Vector - Vector sai số
+Residual Vector vuông góc với vector được chiếu lên.
+
+6.6 Orthogonal Projection - phép chiếu trực giao
+là đường nối từ vector gốc đến hình chiếu vuông góc với không gian được chiếu lên.
+Hai tính chất cần nhớ:
+- hình chiếu nằm trong không gian đích
+- Residual vuông góc với không gian đích
+
+Trong bài toán chiếu lên một đường thẳng, residual vuông góc với vector chỉ phương của đường thẳng đó.
+
+6.7 Projection Matrix - ma trận chiếu
+6.8 Projection lên một không gian có nhiều vector
+6.9 Ứng dụng trong Machine Learning
+6.9.1 Linear Regression và Least Squares
+https://chatgpt.com/c/6ae7155e-e614-83ec-b70f-3cf73befc6b7
+
+6.9.2 PCA - Principal Component Analysis
+PCA tìm các hướng chính trong dữ liệu để biểu diễn dữ liệu bằng ít chiều hơn.
+Khi giảm chiều, ta có thể xem quá trình này như việc chiếu dữ liệu lên một không gian con có số chiều nhỏ hơn.
+
+VD: dữ liệu 3D được chiếu lên 1 mặt phẳng 2D
+
+6.9.3 Embedding và Semantic Search
+Trong hệ thống RAG, embedding biểu diễn văn bản thành vector.
+Projection có thể xuất hiện trong các kỹ thuật biến đổi hoặc giảm chiều embedding, ví dụ PCA.
+
+Tuy nhiên, cần phân biệt: Cosine Similarity và Projection không phải cùng một phép toán.
+- Cosine Similarity đo mức độ tương đồng về hướng giữa 2 vector.
+- Projection lấy thành phần của một vector theo một hướng hoặc không gian khác.
+
+
+7. Gram-Schmidt & QR Decomposition
+- Gram-Schmidt Process: biến một vector độc lập tuyến tính thành vector trực giao (Orthogonal) và chuẩn hoá (Orthonormal).
+- QR Decomposition: phân tích một ma trận thành tích của hai ma trận Q và R.
+
+7.1 Orthogonal và Orthonormal
+7.1.1 Orthogonal - trực giao
+Hai vector được gọi là trực giao nếu Dot Product của chúng bằng 0:
+    a.b = 0
+VD: a=[1,0] b=[0,1]
+
+7.1.2 Orthonormal - trực chuẩn
+Một tập vector được gọi là Orthonormal khi:
+- Các vector đôi một trực giao
+- Magnitude của mỗi vector bằng 1
+VD: q1=[1,0] q2=[0,1]
+ta có: q1.q2=0
+và: |q1|=|q2|=1
+=> Vậy chúng tạo thành một Orthonormal Set.
+
+7.1.3 So sánh
+Khái niệm       Điều kiện
+Orthogonal      Các vector vuông góc với nhau
+Orthonormal     Vuông góc và mỗi vector có norm = 1
+Normalized      Mỗi vector được chuẩn hoá để norm = 1
+
+Lưu ý: một vector có norm bằng 1 chưa chắc đã trực giao với vector khác.
+
+7.2 Gram-Schmidt Process là gì?
+Giả sử chúng ta có 2 vector độc lập tuyến tính nhưng không vuông góc:
+    a1=[1,1] a2=[1,0]
+Ta muốn biến chúng thành 2 vector trực giao mà vẫn giữ nguyên không gian mà chúng sinh ra.
+Gram-Schmidt giúp chúng thực hiện điều đó.
+
+Ý tưởng:
+- giữ vector đầu tiên
+- chiếu vector thứ 2 lên vector đầu tiên
+- lấy vector thứ 2 trừ đi phần hình chiếu
+- kết quả sẽ vuông góc với vector đầu tiên
+
+7.3 QR Decomposition là gì?
+QR Decomposition là kỹ thuật phân tích một ma trận A thành tích của 2 ma trận:
+    A = QR
+Trong đó:
+- Q: ma trận có các cột trực chuẩn (orthonormal)
+- R: Ma trận tam giác trên (upper triangular)
+
+Các cột của Q trực chuẩn với nhau.
+
+QR decomposition is used in:
+- Solving linear systems (more stable than Gaussian elimination)
+- Computing eigenvalues (QR algorithm)
+- Least-squares regression (the standard numerical method)
+
+
+7.4 Ứng dụng trong AI Engineering
+7.4.1 Linear Regression và Least Squares
+7.4.2 PCA và giảm chiều dữ liệu
+PCA thường sử dụng các kỹ thuật đại số tuyến tính như Eigenvalue Decomposition và Singular Value Decomposition (SVD)
+QR cũng là một kỹ thuật nền tảng trong tính toán ma trận và một số thuật toán tìm Eigenvalues.
+
+7.4.3 Deep Learning
+Orthonormal vectors và orthogonal initialization có thể giúp kiểm soát tính chất của phép biến đổi tuyến tính và hỗ trợ ổn định gradient trong một số kiến trúc.
+Tuy nhiên, không phải mọi Neural Network đều cần QR Decomposition trong quá trình training.
