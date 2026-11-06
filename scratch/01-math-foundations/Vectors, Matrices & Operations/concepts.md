@@ -138,3 +138,158 @@ Inverse Matrix xuất hiện trong nhiều lĩnh vực:
 - Linear Regression: Nghiệm dạng đóng (Normal Equation).
 - Optimization: Một số phương pháp tối ưu hóa.
 - Computer Vision: Các phép biến đổi hình học.
+
+6. Identity Matrix - Ma trận đơn vị
+6.1 Identity Matrix là gì?
+Identity Matrix (ma trận đơn vị) là một ma trận vuông có:
+- các phần tử trên đường chéo chính bằng 1.
+- tất cả phần tử còn lại bằng 0
+Bạn có thể hình dung Identity Matrix giống như số 1 trong phép nhân số học.
+Với mọi ma trận A phù hợp kích thước:
+        A @ I = I @ A = A
+Ma trận A không thay đổi.
+
+6.2 Identity Matrix liên quan gì đến Inverse?
+Đây là mối quan hệ quan trọng nhất:
+        A @ A-1 = I
+Trong đó:
+- A: phép biến đổi ban đầu
+- A-1: phép biến đổi ngược
+- I: kết quả khi hai phép biến đổi triệt tiêu nhau
+
+6.3 Mối liên hệ giữa 3 khái niệm
+Khái niệm       Ý nghĩa                                   Điều cần nhớ
+Determinant     Hệ số biến đổi diện tích/thể tích có dấu  det=0 thì không khả nghịch
+Iverse          đảo ngược phép biến đổi                   chỉ tồn tại khi det!=0
+Identity        phép biến đổi không làm thay đổi dữ liệu  A @ I = A
+
+Mối quan hệ:
+                det(A) != 0 <=> A-1 tồn tại
+với ma trận vuông.
+
+7. Broadcasting
+
+7.1 Broadcasting là gì?
+Broadcasting là cơ chế cho phép Numpy thực hiện các phép toán giữa những array có shape khác nhau bằng cách tự động xem chúng như được mở rộng theo các chiều phù hợp, mà không nhất thiết phải tạo ra bản sao dữ liệu thực sự.
+
+7.2 Quy tắc Broadcasting
+Numpy so sánh Shape của 2 array từ chiều cuối cùng trở về chiều đầu tiên (Right to Left)
+Hai chiều được xem là tương thích nếu:
+- Hai kích thước bằng nhau
+- Một trong hai kích thước bằng 1
+- Một array không có chiều tương ứng thì được xem như có kích thước 1 ở phía trước.
+Nếu không đáp ứng đủ các điều kiện trên thì Broadcasting sẽ thất bại.
+
+VD1: Broadcasting hợp lệ
+        A:(2,3)
+        B:(3,)
+Ta có thể hình dung B được mở rộng thành
+        B:(1,3) -> (2,3)
+
+VD2: Broadcasting hợp lệ
+        A:(3,1)
+        B:(1,4)
+So sánh từng chiều:
+        3 x 1
+        1 x 4
+Kết qủa: A+B = (3:4)
+
+7.3 Broadcasting trong Neural Network: Bias Addition
+Giả sử một Neural Network có 3 neurons và nhận dữ liệu từ 2 samples.
+Sau khi nhân Weight Matrix với Input Matrix,  chúng ta nhận được:
+        Z = 1 2 3
+            4 5 6 
+Trong đó:
+- 2 hàng: 2 samples
+- 3 cột: 3 neurons
+
+Bias của layer: b =[10,20,30]
+Ta muốn cộng bias vào từng sample
+        Z + b = 1+10    2+20    3+30
+                4+10    5+20    6+30
+             
+              = 11 22 33
+                14 25 36
+Điều quan trọng: Bias của mỗi neuron được cộng vào tất cả samples, chứ không phải mỗi sample có một bộ bias riêng.
+
+8. Neural Network Forward Pass
+8.1 Forward Pass là gì?
+Forward Pass (lan truyền thuận) là quá trình dữ liệu đi từ đầu vào (Input) qua các layer của Neural Network để tạo ra kết quả dự đoán (Output).
+Một Dense Layer cơ bản thực hiện 3 bước:
+- Matrix Multiplication
+- Bias Addition
+- Activation Function
+
+Công thức:      y = ReLU(W@x+b)
+Trong đó:
+        x: Input vector
+        W: Weight matrix
+        b: Bias vector
+        W@x: Weighted Sum
+        +b: Bias Addition
+        ReLU: Activation Function
+        y: Output vector
+
+8.1 Bước 1 - Input layer
+Giả sử chúng ta có một căn nhà với 3 đặc trưng:
+                0.5
+        x =     0.8
+                0.2
+Các giá trị này đã được chuẩn hoá (Normalized).
+Shape:  x:(3,1)
+
+Có 3 input features.
+
+8.3 Bước 2 - Weight Matrix
+Giả sử Hidden Layer có 2 Neurons.
+Mỗi Neuron cần 3 weights để kết nối với 3 input features.
+
+Do đó:          W =     0.2 0.4 0.6
+                        0.1 0.3 0.5
+
+Shape:  W:(2,3)
+- 2 hàng: 2 neurons
+- 3 cột: 3 weights cho mỗi neuron.
+
+8.4 Bước 3 - matrix multiplication
+Chúng ta thực hiện:     Z=W@x
+                         = 0.2 0.4 0.6 | 0.5
+                           0.1 0.3 0.5 | 0.8
+                                       | 0.2
+
+                         = 0.54
+                           0.39
+
+Shape:  (2,3)@(3,1)=(2,1)
+
+8.5 Bước 4 - Bias Addition
+Giả sử: b = 0.1
+            -0.2
+
+Ta có Z+b = 0.54        0.1
+            0.39        -0.2
+          
+          = 0.64
+            0.19
+
+Kết quả này được gọi là Pre-activation (giá trị trước kích hoạt)
+
+8.6 Bước 5 - Activation Function: ReLU
+ReLU là viết tắt của Rectified Linear Unit
+
+Công thức:      ReLU(x) = max(0,x)
+
+Nghĩa là:
+- Nếu x lớn hơn 0: giữ nguyên
+- Nếu x nhỏ hơn hoặc bằng 0: trả về 0
+
+VD: ReLU(-2)=0
+    ReLU(3)=3
+
+Áp dụng vào kết quả của chúng ta:
+        ReLU(0.64) = 0.64
+             0.19    0.19
+
+Trong NumPy:
+output = np.maximum(0, W@x + b)
+
