@@ -1,8 +1,47 @@
 Every neural network is just matrix multiplication with extra steps.
 
+Every image your model processes is a matrix of pixel values. 
+Mỗi hình ảnh mà mô hình của bạn xử lý là một ma trận các giá trị pixel.
+
+Every work embedding is a vector.
+Mỗi từ núng là một vector.
+
+Every layer of every neural network is a matrix transformation.
+Mỗi lớp của mỗi mạng lứoi thần kinh là một phép biến đổi ma trận.
+
+You cannot build AI systems without being fluent in matrix operations the same way you cannot write code without understanding variables.
+Bạn không thể xây dựng hệ thống AI nếu không thông thạo các phép toán ma trận giống như cách bạn không thể viết mã mà không hiểu các biến.
+
+Tóm tắt các phép toán ma trận và ý nghĩa của chúng trong neural network:
+- Addition (công ma trận): cộng từng phần tử tương ứng.
+        Trong mạng neuron: Adding bias to output. Mỗi lớp tính y=Wx+b, trong đó b dịch chuyển kết quả để mô hình linh hoạt hơn (không bị ép đi qua gốc toạ độ).
+- Scalar Multiply (nhân với một số): nhân mọi phần tử với cùng một số.
+        Trong mạng nơ-ron: learning rate × gradients. Khi cập nhật trọng số: W ← W − η·∇W, thì η chính là số vô hướng làm co giãn bước đi.
+- Matrix Multiply (nhân ma trận): biến đổi vector (xoay, co giãn, chiếu,...)
+        Trong mạng nơ-ron: Layer forward pass. Phép Wx chính là lớp fully-connected, và đây là phép tốn nhiều tính toán nhất (nên GPU được tối ưu cho nó).
+Transpose (chuyển vị): đổi hàng thành cột.
+Trong mạng nơ-ron: backpropagation. Gradient lan truyền ngược dùng Wᵀ, ví dụ ∂L/∂x = Wᵀ · ∂L/∂y.
+- Determinant (định thức): một con số tóm tắt ma trận (độ co giãn diện tích/thể tích; bằng 0 nghĩa là ma trận làm “xẹp” một chiều).
+        Trong mạng nơ-ron: kiểm tra khả nghịch. det ≠ 0 thì ma trận khả nghịch; det = 0 thì suy biến. Liên hệ với bảng đầu tiên: rank deficient ⇒ det = 0.
+
+- Inverse (nghịch đảo): hoàn tác một phép biến đổi (A⁻¹A = I).
+        Trong mạng nơ-ron: giải hệ tuyến tính, ví dụ phương trình chuẩn của linear regression w = (XᵀX)⁻¹Xᵀy. Thực tế người ta thường không tính nghịch đảo trực tiếp mà dùng QR hoặc SVD cho ổn định.
+
+- Identity (ma trận đơn vị): ma trận “không làm gì”, Ix = x.
+        Trong mạng nơ-ron:
+        - Khởi tạo: đôi khi khởi tạo trọng số gần I để lớp ban đầu giữ nguyên tín hiệu.
+        - Residual connection (ResNet, Transformer): y = x + F(x), phần “x” chính là đường đi qua phép đồng nhất, giúp gradient truyền qua mạng sâu dễ hơn.
+
+Ví dụ gom lại một lớp mạng:
+        Một lớp: y = Wx + b
+- Wx: matrix multiply
+- b: addition
+- Backprop: dùng Wᵀ
+- Cập nhật: W ← W − η·∇W (scalar multiply)
+
 1. Vector và Matrix Operations
 1.1 Vector là gì?
-Vector là một dãy số có thứ tự.
+Vector là một danh sách các số có hướng và độ lớn.
 Trong AI, một vector thường đại diện cho một đối tượng thông qua các đặc trưng (features).
 
 Ví dụ: một căn nhà thường được biểu diễn bằng 3 features:
@@ -27,6 +66,8 @@ Nếu mỗi hàng đại diện cho một căn nhà, thì ma trận chứa dữ 
 - Sample: một mẫu dữ liệu
 - Feature: một đặng trưng
 - Dataset: tập hợp nhiều mẫu dữ liệu
+
+Trong Neural Networks, ma trận trọng số biến đổi vector đầu vào thành vector đầu ra. Một layer có 784 input và 128 output sử dụng ma trận trọng số 128x784.
 
 1.3 Shape - kích thước của Vector và Matrix
 Shape cho biết số lượng phần tử theo từng chiều.
