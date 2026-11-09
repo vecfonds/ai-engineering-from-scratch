@@ -12,32 +12,6 @@ Mỗi lớp của mỗi mạng lứoi thần kinh là một phép biến đổi 
 You cannot build AI systems without being fluent in matrix operations the same way you cannot write code without understanding variables.
 Bạn không thể xây dựng hệ thống AI nếu không thông thạo các phép toán ma trận giống như cách bạn không thể viết mã mà không hiểu các biến.
 
-Tóm tắt các phép toán ma trận và ý nghĩa của chúng trong neural network:
-- Addition (công ma trận): cộng từng phần tử tương ứng.
-        Trong mạng neuron: Adding bias to output. Mỗi lớp tính y=Wx+b, trong đó b dịch chuyển kết quả để mô hình linh hoạt hơn (không bị ép đi qua gốc toạ độ).
-- Scalar Multiply (nhân với một số): nhân mọi phần tử với cùng một số.
-        Trong mạng nơ-ron: learning rate × gradients. Khi cập nhật trọng số: W ← W − η·∇W, thì η chính là số vô hướng làm co giãn bước đi.
-- Matrix Multiply (nhân ma trận): biến đổi vector (xoay, co giãn, chiếu,...)
-        Trong mạng nơ-ron: Layer forward pass. Phép Wx chính là lớp fully-connected, và đây là phép tốn nhiều tính toán nhất (nên GPU được tối ưu cho nó).
-Transpose (chuyển vị): đổi hàng thành cột.
-Trong mạng nơ-ron: backpropagation. Gradient lan truyền ngược dùng Wᵀ, ví dụ ∂L/∂x = Wᵀ · ∂L/∂y.
-- Determinant (định thức): một con số tóm tắt ma trận (độ co giãn diện tích/thể tích; bằng 0 nghĩa là ma trận làm “xẹp” một chiều).
-        Trong mạng nơ-ron: kiểm tra khả nghịch. det ≠ 0 thì ma trận khả nghịch; det = 0 thì suy biến. Liên hệ với bảng đầu tiên: rank deficient ⇒ det = 0.
-
-- Inverse (nghịch đảo): hoàn tác một phép biến đổi (A⁻¹A = I).
-        Trong mạng nơ-ron: giải hệ tuyến tính, ví dụ phương trình chuẩn của linear regression w = (XᵀX)⁻¹Xᵀy. Thực tế người ta thường không tính nghịch đảo trực tiếp mà dùng QR hoặc SVD cho ổn định.
-
-- Identity (ma trận đơn vị): ma trận “không làm gì”, Ix = x.
-        Trong mạng nơ-ron:
-        - Khởi tạo: đôi khi khởi tạo trọng số gần I để lớp ban đầu giữ nguyên tín hiệu.
-        - Residual connection (ResNet, Transformer): y = x + F(x), phần “x” chính là đường đi qua phép đồng nhất, giúp gradient truyền qua mạng sâu dễ hơn.
-
-Ví dụ gom lại một lớp mạng:
-        Một lớp: y = Wx + b
-- Wx: matrix multiply
-- b: addition
-- Backprop: dùng Wᵀ
-- Cập nhật: W ← W − η·∇W (scalar multiply)
 
 1. Vector và Matrix Operations
 1.1 Vector là gì?
@@ -147,7 +121,9 @@ Determinant     Ý nghĩa hình học
 0               không gian bị ép xuống chiều thấp hơn
 
 Điểm quan trọng nhất: det(A) = 0
-Điều này có nghĩa phép biến đổi đã làm mất ít nhất một chiều của không gian. Trong 2D, một vùng có diện tích dương có thể bị ép thành một đường thẳng hoặc một điểm.
+- Điều này có nghĩa phép biến đổi đã làm mất ít nhất một chiều của không gian. Trong 2D, một vùng có diện tích dương có thể bị ép thành một đường thẳng hoặc một điểm.
+- Ma trận không có nghịch đảo
+- Hệ tuyến tính sử dụng nó không có nghiệm hoặc có vô số nghiệm
 
 5. Inverse Matrix - Ma trận nghịch đảo
 5.1 Inverse Matrix là gì?
@@ -334,3 +310,46 @@ VD: ReLU(-2)=0
 Trong NumPy:
 output = np.maximum(0, W@x + b)
 
+
+9. Tổng kết
+- Vector là một danh sách có số có thứ tự. Trong AI: một điểm trong không gian nhiều chiều.
+- Matrix: Một phép biến đổi tuyến tính. Nó ánh xạ các vector từ không gian này sang không gian khác.
+- Matrix multiply: tích vô hướng giữa mỗi hàng của ma trận đầu tiên và mỗi cột của ma trận thứ 2. Thứ tự quan trọng.
+- Transpose: hoán đổi hàng và cột. Biến một ma trận mxn thành nxm. Quan trọng trong lan truyền ngược (backpropagation).
+- Determinant: đo diện tích quy mô ma trận (2D) hoặc thể tích (3D). Số 0 có nghĩa là sự biến đổi sẽ nghiền nát một chiều.
+- Inverse: ma trận đảo ngược phép biến đổi. Chỉ tồn tại khi định thứ khác 0.
+- Identity matrix: ma trận tương đường với phép nhân với 1. Được sử dụng trong các kết nói dư (ResNets).
+- Broadcasting: kéo dài mảng nhỏ hơn để khớp với mảng lớn hơn bằng cách lặp lại dọc theo các thứ nguyên bị thiếu.
+- Element-wise: nhân các vị trí phù hợp. Cả 2 mảng phải có hình dạng giống nhau (hoặc có thể broadcast).
+
+
+Tóm tắt các phép toán ma trận và ý nghĩa của chúng trong neural network:
+- Addition (công ma trận): cộng từng phần tử tương ứng.
+        Trong mạng neuron: Adding bias to output. Mỗi lớp tính y=Wx+b, trong đó b dịch chuyển kết quả để mô hình linh hoạt hơn (không bị ép đi qua gốc toạ độ).
+
+- Scalar Multiply (nhân với một số): nhân mọi phần tử với cùng một số.
+        Trong mạng nơ-ron: learning rate × gradients. Khi cập nhật trọng số: W ← W − η·∇W, thì η chính là số vô hướng làm co giãn bước đi.
+
+- Matrix Multiply (nhân ma trận): biến đổi vector 
+        Trong mạng nơ-ron: Layer forward pass. Phép Wx chính là lớp fully-connected, và đây là phép tốn nhiều tính toán nhất (nên GPU được tối ưu cho nó).
+
+- Transpose (chuyển vị): đổi hàng thành cột.
+        Trong mạng nơ-ron: backpropagation. Gradient lan truyền ngược dùng Wᵀ, ví dụ ∂L/∂x = Wᵀ · ∂L/∂y.
+
+- Determinant (định thức): một con số tóm tắt ma trận (độ co giãn diện tích/thể tích; bằng 0 nghĩa là ma trận làm “xẹp” một chiều).
+        Trong mạng nơ-ron: kiểm tra khả nghịch. det ≠ 0 thì ma trận khả nghịch; det = 0 thì suy biến. Liên hệ với bảng đầu tiên: rank deficient ⇒ det = 0.
+
+- Inverse (nghịch đảo): hoàn tác một phép biến đổi (A⁻¹A = I).
+        Trong mạng nơ-ron: giải hệ tuyến tính, ví dụ phương trình chuẩn của linear regression w = (XᵀX)⁻¹Xᵀy. Thực tế người ta thường không tính nghịch đảo trực tiếp mà dùng QR hoặc SVD cho ổn định.
+
+- Identity (ma trận đơn vị): ma trận “không làm gì”, Ix = x.
+        Trong mạng nơ-ron:
+        - Khởi tạo: đôi khi khởi tạo trọng số gần I để lớp ban đầu giữ nguyên tín hiệu.
+        - Residual connection (ResNet, Transformer): y = x + F(x), phần “x” chính là đường đi qua phép đồng nhất, giúp gradient truyền qua mạng sâu dễ hơn.
+
+Ví dụ gom lại một lớp mạng:
+        Một lớp: y = Wx + b
+- Wx: matrix multiply
+- b: addition
+- Backprop: dùng Wᵀ
+- Cập nhật: W ← W − η·∇W (scalar multiply)
