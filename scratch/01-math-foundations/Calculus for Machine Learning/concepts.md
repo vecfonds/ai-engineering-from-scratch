@@ -180,3 +180,116 @@ Nói cách khác:
 Gradient cho biết hướng tăng nhanh nhất của hàm Loss. Muốn giảm Loss, chúng ta sẽ đi theo hướng ngược lại.
 
 Đây là nền tảng của Gradient Descent.
+
+Tóm tắt:
+- Derivative: Đo tốc độ thay đổi của một hàm số.
+- Partial Derivatives: Đo tốc độ thay đổi của hàm nhiều biến theo từng biến riêng biệt.
+
+3. Gradient & Gradient Descent
+Làm thế nào để mô hình Machine Learning tự điều chỉnh các tham số nhằm giảm sai số dự đoán?
+Đó chính là nhiệm vụ của Gradient Descent.
+
+3.1 Gradient
+
+Giả sử chúng ta có hàm Loss:
+VD:        L(w1,w2) = (w1-3)^2 + (w2-2)^2
+
+Mục tiêu là tìm w1, w2 sao cho Loss nhỏ nhất.
+Từ phần Partial Derivatives, chúng ta tính được đạo hàm riêng của từng biến.
+Gộp 2 đạo hàm riêng thành một vector -> đây gọi là Gradient.
+
+Ý nghĩa: Gradient cho biết hướng mà hàm Loss tăng nhanh nhất tại vị trí hiện tại.
+
+VD: tại (w1,w2) = (1,4)
+Ta có: nabla L = [-4, 4]
+Diễn giải:
+- thành phần thứ nhất là -4: tăng w1 sẽ làm loss giảm cục bộ.
+- Thành phần thứ hai là +4: giảm w2 sẽ làm Loss giảm cục bộ.
+
+Vì vậy, muốn giảm Loss, chúng ta phải di chuyển ngược với Gradient.
+
+    Descent Direction = -nabla L
+
+3.2 Trực quan hoá Gradient
+Hãy tưởng tượng Loss Function là một ngọn đồi hoặc một cái bát hình parabol.
+- Độ cao biểu thị giá trị Loss.
+- Vị trí trên bề mặt biểu thị các Weight.
+- Gradient chỉ hướng dốc lên nhanh nhất.
+- Negative Gradient chỉ hướng dốc xuống nhanh nhất.
+Mục tiêu của chúng ta là tìm vị trí thấp nhất của bề mặt này.
+Đó là điểm mà Loss đạt giá trị nhỏ nhất.
+
+3.3 Gradient Descent là gì?
+Gradient Descent (hạ Gradient) là thuật toán tối ưu hoá dùng Gradient để cập nhật các tham số, nhằm tìm giá trị làm Loss giảm dần.
+
+Ý tưởng rất đơn giản:
+- Khởi tạo Weight bằng 1 giá trị ban đầu
+- Tính Loss
+- Tính Gradient
+- Di chuyển Weight theo hướng ngược Gradient
+- Lặp lại cho đến khi đạt điều kiện dừng
+
+Công thức quan trọng nhất:
+    w    = w    - a(nabla L(w))
+     new    old
+
+Trong đó:
+- w(old): weight hiện tại
+- w(new): weight sau khi cập nhật
+- a: Learning Rate
+- Nabla L(w): Gradient của Loss
+
+Nếu có nhiều Weight, chúng ta cập nhật từng Weight theo Gradient tương ứng.
+
+3.4 Learning Rate là gì?
+Learning Rate (tốc độ học) quyết định mỗi lần cập nhật Weight sẽ di chuyển bao xa.
+Đây là một Hyperparameter rất quan trọng trong Machine Learning.
+Hãy tưởng tượng bạn đang đi xuống một ngọn núi để tìm điểm thấp nhất.
+Có 3 trường hợp:
+TH1: Learning Rate qúa nhỏ
+- mỗi lần cập nhật Weight rất ít
+- Loss giảm rất chậm
+- Cần nhiều Iterations để tiến gần điểm tối ưu
+
+TH2: Learning Rate phù hợp
+- Weight được cập nhật với bước đi hợp lý
+- Loss giảm dần
+- Có thể hội tụ đến điểm tối ưu
+
+TH3: Learning Rate quá lớn
+- Bước cập nhật quá lớn
+- Có thể vượt qua điểm tối ưu
+- Dao động liên tục hoặc khiến Loss tăng mất kiểm soát
+
+Vì vậy, chọn Learning Rate phù hợp là 1 phần quan trọng khi huấn luyện mô hình.
+
+3.5 Phân biệt Gradient và Gradient Descent
+
+Gradient                                Gradient Descent
+là một vector đạo hàm riêng             là thuật toán tối ưu hoá
+cho biết hướng tăng nhanh nhất          sử dụng hướng ngược Gradient
+là kết quả của phép tính đạo hàm        sử dụng Gradient để cập nhật tham số
+không tự cập nhật Weight                cập nhật Weight qua Iterations
+
+Gradient là thông tin về độ dốc. 
+Gradient Descent là cách sử dụng thông tin đó để tìm điểm tối ưu.
+
+3.6 Các biến thể của Gradient Descent
+Khi làm việc với dữ liệu lớn, chúng ta có nhiều cách tính Gradient.
+3.6.1 Batch Gradient Descent
+Sử dụng toàn bộ tập dữ liệu để tính Gradient trong mỗi lần cập nhật.
+Ưu điểm: Gradient ổn định
+Nhược điểm: tốn tài nguyên khi Dataset lớn
+
+3.6.2 Stochastic Gradient Descent (SGD)
+Mỗi lần cập nhật chỉ sử dụng một Sample.
+Ưu điểm: có thể cập nhật nhanh
+Nhược điểm: Gradient dao động nhiều
+
+3.6.3 Mini-batch Gradient Descent
+Mỗi lần cập nhật sử dụng một nhóm nhỏ dữ liệu (batch)
+- cân bằng giữa tốc độ và độ ổn định
+- được sử dụng phổ biến trong Deep Learning
+
+Trong Deep Learning, Mini-batch thường là lựa chọn thực tế vì tận dụng được khả năng xử lý song song của GPU.
+
