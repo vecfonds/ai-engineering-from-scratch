@@ -118,3 +118,65 @@ Ngược lại, nếu w = 5:
 Đây là ý tưởng cốt lõi của việc huấn luyện Machine Learning.
 
 Đạo hàm cho biết mức độ và chiều hướng thay đổi của Loss khi thay đổi Weight.
+
+2. Partial Derivatives - Đạo hàm riêng
+
+2.1 Đạo hàm riêng là gì?
+Đạo hàm riêng là đạo hàm của 1 hàm nhiều biến theo một biến cụ thể, trong khi giữ các biến còn lại không đổi.
+VD: f(x,y) = x^2+3xy+y^2
+Hàm số có 2 biến x và y.
+Chúng ta có thể tính:
+- đạo hàm theo x: giữ y cố định
+- Đạo hàm theo y: giữ x cố định
+
+2.2 Cách tính đạo hàm riêng
+
+VD: f(x,y) = x^2+3xy+y^2
+
+Trường hợp 1: Đạo hàm theo x
+Quy tắc: Xem y như một hằng số.
+
+Trường hợp 1: Đạo hàm theo y
+Quy tắc: Xem x như một hằng số.
+
+Như vậy, cùng 1 hàm số nhưng khi lấy đạo hàm theo những biến khác nhau, chúng ta nhận được những kết quả khác nhau.
+
+2.3 Ứng dụng trong Machine Learning
+Hãy quay lại mô hình Linear Regression:
+
+        y^ = w1x1 + w2x2 + b
+
+Giả sử chúng ta dự đoán giá nhà dựa trên:
+- x1: diện tích nhà
+- x2: số phòng ngủ
+- w1, w2: trọng số của từng đặc trưng
+
+Để huấn luyện mô hình, chúng ta cần một Loss Function.
+Sử dụng Mean Squared Error (MSE).
+Loss Function phụ thuộc vào các Weight.
+
+VD:        L(w1,w2) = (w1-3)^2 + (w2-2)^2
+Mục tiêu là tìm w1, w2 để Loss nhỏ nhất.
+
+Bước 1: tính đạo hàm riêng theo w1.
+    = 2(w1-3)
+Bước 2: Tính đạo hàm riêng theo w2.
+    = 2(w2-2)
+
+Gỉa sử: w1=1, w2=4
+Ta nhận được:
+Với w1    =-4 (nên tăng w1 để giảm Loss)
+Với w1    =4  (nên giảm w2 để giảm Loss)
+
+Có thể thấy rằng, mỗi Weight có một đạo hàm riêng tương ứng.
+Đó là lý do các mô hình Machine Learning cần Partial Derivatives: chúng ta phải biết từng tham số ảnh hưởng đến Loss như nào.
+
+2.4 Từ Partial Derivatives đến Gradient
+Gộp các đạo hàm riêng thành một vector. Vector này gọi là Gradient.
+Nói cách khác:
+- Partial Derivative: độ thay đổi theo từng biến
+- Gradient: tập hợp tất cả đạo hàm riêng thành một vector.
+
+Gradient cho biết hướng tăng nhanh nhất của hàm Loss. Muốn giảm Loss, chúng ta sẽ đi theo hướng ngược lại.
+
+Đây là nền tảng của Gradient Descent.
