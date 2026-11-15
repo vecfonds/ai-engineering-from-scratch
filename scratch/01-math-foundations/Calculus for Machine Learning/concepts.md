@@ -293,3 +293,229 @@ Mỗi lần cập nhật sử dụng một nhóm nhỏ dữ liệu (batch)
 
 Trong Deep Learning, Mini-batch thường là lựa chọn thực tế vì tận dụng được khả năng xử lý song song của GPU.
 
+4. Chain Rule
+Làm thế nào để tính Gradient khi một Neural Network có nhiều Layer và cá phép tính phụ thuộc lẫn nhau?
+
+VD: 1 Neural Network có cấu trúc:
+    Input -> Layer 1 -> Layer 2 -> Output
+
+Output của Layer trước trở thành Input của Layer tiếp theo.
+Do đó, Loss ở cuối mạng phụ thuộc gián tiếp vào tất cả Weight ở những Layer phía trước.
+-> Cần một phương pháp để tính đạo hàm xuyên suốt chuỗi phép tính đó.
+-> Chain Rule.
+
+4.1 Chain Rule là gì?
+Chain Rule (quy tắc dây chuyền) là quy tắc tính đạo hàm của một hàm số hợp (Composite Function).
+Nói đơn giản: Khi một biến phụ thuộc vào một biến khác, và một hàm lại phụ thuộc vào biến đó, chúng ta có thể tính đạo hàm của hàm ngoài thông qua đạo hàm của các hàm trung gian.
+VD:
+    y=f(u),     u=g(x)
+
+Khi đó:
+    y=(fg(x))
+
+Đạo hàm theo x:
+    dy   dy   du 
+    -- = -- x --
+    dx   du   dx
+
+Đạo hàm của hàm hợp bằng tích các đạo hàm trên chuỗi phụ thuộc.
+
+4.2 Tại sao phải nhân các đạo hàm?
+Xét:    u=3x+2
+        y=u^2
+Giả sử x tăng một lượng rất nhỏ là Denta x.
+- u thay đổi xấp xỉ 3 lần Denta x.
+- y thay đổi xấp xỉ 2u lần lượng thay đổi của u.
+
+Do đó: Dental y = 2u(3denta x)
+Suy ra:     denta y
+            ------- = 6u
+            denta x
+
+Khi lượng thay đổi tiến về 0, ta nhận được đạo hàm chính xác:
+    dy   
+    -- = 2u*3 
+    dx
+
+Vì vậy, chúng ta nhân các đạo hàm vì mỗi phép biến đổi truyền sự thay đổi từ biến trước sang biến sau.
+
+4.3 Chain Rule trong Machine Learning
+Forward Pass: tính toán từ input đến outpu để tạo Prediction và Loss.
+Backward Pass:
+- Sử dụng Chain Rule để tính Gradient ngược từ Output về các Layer trước đó.
+- Sau khi có Grandient, Optimizẻ sử dụng chúng để cập nhật Weight.
+
+Lưu ý: Backpropagation là thuật toán tính Gradient hiệu quả cho mạng nhiều tầng; Gradient Descent và các Optimizer là phương pháp sử dụng Gradient để cập nhật tham số.
+
+4.4 Một số vấn đề khi Backpropagation
+Chain Rule rất hữu ích, nhưng khi chuỗi phép tính quá dài, có thể xuất hiện 2 vấn đề:
+
+4.4.1 Vanishing Gradient
+Gradient trở nên rất nhỏ khi truyền qua nhiều Layer.
+Hệ quả:
+- các layer ở xa Output nhận được Gradient rất nhỏ.
+- Weight thay đổi rất ít
+- Mạng Neural Network có thể khó học những quan hệ phụ thuộc dài.
+
+4.4.2 Exploding Gradient
+Gradient tăng quá lớn khi truyền qua nhiều Layer.
+Hệ quả:
+- Weight được cập nhật với bước quá lớn
+- Loss có thể dao động mạnh
+- Quá trình huấn luyện có thể mất ổn định
+
+Hai vấn đề này đặc biệt quan trọng khi huấn luyện Deep Neural Networks và các mô hình chuỗi như RNN.
+Một số giải pháp thường gặp:
+
+Vấn đề              Giải pháp
+Vanishing Gradient  ReLU, Residual Connections, phù hợp kiến trúc
+Exploding Gradient  Gradient Clipping, điều chỉnh Learning Rate, chuẩn hoá
+
+5. Hessian Matrix - Ma trận Hesian
+
+5.1 Đạo hàm bậc hai có ý nghĩa gì?
+- Đạo hàm bậc nhất cho biết độ dốc của hàm số.
+- Đạo hàm bậc 2 cho biết độ dốc đang thay đổi như thế nào.
+
+Ba trường hợp quan trọng:
+- f"(x)>0: Đồ thị cong lên (Convex) tại vùng đang xét.
+- f"(x)<0: đồ thi cong xuống (Concave) tại vùng đang xét.
+- f"(x)=0: có thể là điểm uốn hoặc trường hợp đặc biệt.
+
+Lưu ý: Đạo hàm bậc hai bằng 0 chưa đủ để kết luận đó là điểm uốn.
+
+5.2 Hessian Matrix là gì?
+Trong hàm một biến, đạo hàm bậc hai chỉ là một con số.
+Nhưng trong hàm nhiều biến, chúng ta có nhiều đạo hàm riêng bậc hai.
+
+VD: f(x,y)=x^2+3xy+y^2
+
+Chúng ta cần tính:
+- đạo hàm bậc hai theo x
+- đạo hàm bậc hai theo y
+- đạo hàm bậc hai theo x và y
+Tất cả được tổ chức thành một ma trận gọi là Hessian Matrix.
+
+Với hàm có n biến, Hessian có kích thước:   R(nxn)
+
+Ví dụ:
+- hàm 1 biến: Hessian có kích thước 1x1
+- hàm 2 biến: Hessian có kích thước 2x2
+- hàm 3 biến: Hessian có kích thước 3x3
+- Mô hình có 1000 Weight: Hessian có kích thước 1000x1000
+
+5.3 Local Minimum, Local Maximum và Saddle Point
+Đây là một ứng dụng rất quan trọng của Hessian trong Optimization. 
+Trước tiên, chúng ta cần hiểu Critical Point (điểm tới hạn).
+
+Một điểm tới hạn là điểm mà Gradient bằng 0:    Nabla f = 0
+
+Tại những điểm này, chúng ta có thể sử dụng Hessian để kiểm tra  hình dạng của hàm số xung quanh điểm đó.
+
+Có 3 TH chính.
+TH1: Local Minimum - cực tiểu địa phương
+VD: f(x,y)=x^2+y^2
+
+Gradient:               2x
+            Nabla f =   
+                        2y
+
+Tại (0,0):              0
+            Nabla f =
+                        0
+
+Hessian:        2  0
+            H =
+                0  2
+
+Hai Eigenvalues của Hessian:
+            Lambda1=2, Lambda2=2
+
+Cả hai đều dương.
+Kết luận: (0,0) là điểm cực tiểu địa phương, đồng thời cũng là cực tiểu toàn cục của hàm này.
+
+TH2: Local Maximum - cực đại địa phương
+VD: f(x,y)=-x^2-y^2
+
+Gradient:               -2x
+            Nabla f =   
+                        -2y
+
+Tại (0,0):              0
+            Nabla f =
+                        0
+
+Hessian:        -2  0
+            H =
+                0  -2
+
+Eigenvalues: Lambda1=-2, Lambda2=-2
+
+Cả 2 đều âm.
+Kết luận: (0,0) là điểm cực đại địa phương, đồng thời cũng là cực đại toàn cục.
+
+TH3: Saddle Point - Điểm yên ngựa
+VD: f(x,y)=x^2-y^2
+
+Gradient:               2x
+            Nabla f =   
+                        -2y
+
+Tại (0,0):              0
+            Nabla f =
+                        0
+
+Hessian:        2  0
+            H =
+                0  -2
+
+Eigenvalues: Lambda1=2, Lambda2=-2
+
+Một Eigenvalues dương, một Eigenvalues âm.
+Kết luận: (0,0) là Saddle Point.
+
+Bảng tổng hợp:
+Hessian tại Critical Point                      Kết luận
+Tất cả Eigenvalues dương                        Local Minumum
+Tất cả Eigenvalues âm                           Local Maximum
+Có cả Eigenvalues dương và âm                   Saddle Point
+Có Eigenvalue bằng 0                            chưa kết luận bằng kiểm tra này
+
+Điểm cuối cùng rất quan trọng: nếu Hessian có Eigenvalue bằng 0, phép kiểm tra bậc 2 có thể không đủ để phân loại. Chúng ta cần xem xét các bậc cao hơn hoặc phân tích trực tiếp hàm số.
+
+5.4 Tại sao Hessian cần Eigenvalues?
+Đối với Hessian, Eigenvectors thể hiện các hướng đặc biệt trong độ cong, còn Eigenvalues biểu thị độ cong tương ứng theo các hướng đó.
+
+Hessian:        2  0
+            H =
+                0  -2
+Eigenvalues: Lambda1=2, Lambda2=-2
+Điều này có nghĩa:
+- theo một hướng, bề mặt cong lên.
+- Theo hướng còn lại, bề mặt cong xuống.
+=> chúng ta nhận diện được Saddle Point
+
+Eigenvalues không chỉ là một khái niệm của đại số tuyến tính. Chúng còn giúp phân tích độ cong của Loss Function trong Machine Learning.
+
+5.5 Hessian được sử dụng như thế nào trong Machine Learning?
+- Gradient cho biết hướng tăng nhanh nhất
+- Negative Gradient cho biết hướng giảm nhanh nhất
+- Hessian cho biết độ cong của hàm Loss
+
+Vậy nếu biết cả hướng và độ cong, liệu chúng ta có thể tìm điểm tối ưu hiệu quả hơn không?
+Một phương pháp nổi tiếng sử dụng Hessian là Newton's Method.
+Điểm khác biệt là Newton's Method sử dụng độ cong để điều chỉnh bước di chuyển.
+
+6. Taylor Series - Chuỗi Taylor
+Taylor Series giúp chúng ta xấp xỉ một hàm số phức tạp bằng một đa thức đơn giản hơn tại một vùng gần điểm đang xét.
+
+6.1 Taylor Series là gì?
+Giả sử chúng ta có một hàm số phức tạp:
+    f(x) = sin(x)
+Thay vì tính trực tiếp giá trị của hàm tại mọi vị trí, chúng ta có thể xấp xỉ nó bằng một đa thức.
+Ví dụ, khi x gần 0: sin(x) ~~ x
+Đây là xấp xỉ Taylor bậc nhất tại x=0
+
+Khi sử dụng nhiều thành phần hơn, độ chính xác xấp xỉ thường được cải thiện trong vùng lân cận điểm triển khai.
+
+
