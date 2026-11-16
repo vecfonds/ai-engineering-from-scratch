@@ -519,3 +519,151 @@ Ví dụ, khi x gần 0: sin(x) ~~ x
 Khi sử dụng nhiều thành phần hơn, độ chính xác xấp xỉ thường được cải thiện trong vùng lân cận điểm triển khai.
 
 
+7. Integrals - Tích phân
+
+7.1 Tích phân là gì?
+- Derivative (đạo hàm): cho biết một đại lượng thay đổi nhanh như thế nào.
+- Integral (tích dạy): tính tổng sự tích luỹ của một đại lượng liên tục.
+
+VD: giả sử bạn đang lái xe
+- Tốc độ: 60 km/h
+- bạn duy trì tốc độ đó trong 2h
+- quãng đường đi được là 120 km
+
+Ta có:
+    Distance = Speed x Time
+
+Nếu tốc độ thay đổi liên tục theo thời gian thì khôgn thể đơn giản lấy một tốc độ nhân với thời gian. Ta cần tích phân.
+    s=/v(t)dt
+Trong đó:
+- v(t): tốc độ tài thời điểm t
+- dt: một khoảng thời gian rất nhỏ
+- tích phân cộng dồn quãng đường trong tất cả các khoảng thời gian nhỏ đó.
+
+7.2 Hiểu tíh phân qua đồ thị
+Ý nghĩa hình học cơ bản của tích phân xác định: tính diện tích có dấu bên dưới đồ thị.
+Lưu ý: Nếu hàm số nằm dưới trục hoành, phần diện tích đố được tính với dấu âm.
+
+7.3 Hai loại tích phân 
+7.3.1 Infefinite Integral - Tích phân bất định
+Tích phân bất định tìm một hàm nguyên hàm.
+
+7.3.2 Definite Integral - tích phân xác định
+Tích phân xác định tính giá trị tích luỹ trên một khoảng cụ thể.
+
+7.4 Tích phân được sử dụng như thế nào trong Machine Learning?
+7.4.1 Probability Density Function (PDF) - Hàm mật độ xác suất
+7.4.2 Expected Value - Giá trị kỳ vọng
+Giá trị kỳ vọng cho biết giá trị trung bình theo xác suất của biến đó.
+7.4.3 KL Divergence 
+KL Divergence đo mức độ khác biệt giữa hai phân phối xác suất P và Q.
+
+8. Multivariable Chain Rule
+Một Neural Network có thể chứa hàng triệu tham số (parameters).
+
+9. Backpropagation hoạt động như thế nào?
+Có thể hiểu Backpropagation thành 2 giai đoạn:
+- Forward Pass - Lan truyền xuôi: dữ liệu đi từ input đến output để tính prediction và Loss.
+    Input -> Layers -> Prediction -> Loss
+
+- Backward Pass - Lan truyền ngược: Gradient được truyền từ Loss ngược về các Layer để tính ảnh hưởng của từng Weight.
+    Loss -> Layers -> Weight
+
+Một điểm cần phân biệt:
+- Backpropagation: thuật toán tính gradient hiệu quả bằng Chain Rule.
+- Gradient Descent: thuật toán sử dụng gradient để cập nhật parameters.
+
+
+10. Jacobian Matrix - Ma trận Jacobian
+Ma trận đạo hàm của một hàm nhiều đầu ra theo nhiều đầu vào.
+Jacobian giúp mô tả cách nhiều output thay đổi khi nhiều input thay đổi.
+
+10.1 Tại sao cần Jacobian?
+Hãy xét 2 trường hợp.
+TH1: 1 input - 1 output
+    y=f(x)=x^2
+
+Đạo hàm:    dy
+            -- = 2x
+            dx
+
+TH2: nhiều input - một output
+    f(x,y)=x^2+3y
+
+Ta có hai đạo hàm riêng:    
+            df
+            -- = 2x
+            dx
+
+            df
+            -- = 3
+            dy
+
+Kết quả được biểu diễn bằng một vetor:
+              2x
+    Nabla f =
+              3
+
+Đây chính là Gradient.
+
+TH3: Nhiều input - nhiều output
+Giả sử:
+        f(x,y)=| f1(x,y)|
+               | f2(x,y)|
+
+Với: f1(x,y)=x^2+y
+     f2(x,y)=xy
+
+10.2 Jacobian Matrix là gì?
+Jacobian là ma trận chứa tất cả đạo hàm riêng bậc nhất của các output theo các input.
+Công thức tổng quát:
+Cho hàm:       n     m
+            f:R  -> R
+
+Jacobian có kích thước: mxn
+
+Trong đó:
+- n: số lượng input
+- m: số lượng output
+
+Cách ghi nhớ:
+- Mỗi hàng tương ứng với 1 output
+- Mỗi cột tương ứng với 1 input
+- Mỗi phần tử là một đạo hàm riêng
+
+10.3 Jacobian có ý nghĩa gì về mặt hình học?
+Ta có thể sử dụng Jacobian để dự đoán output thay đổi như thế nào khi input thay đổi một lượng nhỏ.
+
+10.4 Jacobian liên quan gì đến Neural Network?
+Giả sử một layer trong Neural Network thực hiện:
+    y=Wx+b
+Trong đó:
+- x: vector input
+- W: ma trận trọng số
+- b: vector bias
+- y: vector output
+
+Ta có đạo hàm riêng:  dy
+                      -- = W
+                      dx
+
+Vì mỗi output phụ thuộc vào nhiều input, ma trận W chính là Jacobian của phép biến đổi tuyến tính này.
+
+Nếu Layer có Activation Function:
+    a = sigmoid(Wx+b)
+
+Jacobian sẽ là:
+    J=D        W
+       sigmoid
+
+Trong đó D        là ma trận đường chéo chứa các đạo hàm của activation tại từng neuron.
+          sigmoid
+
+Jacobian giúp mô tả cách gradient được truyền qua một Layer.
+
+10.5 Phân biệt Gradient, Hessian và Jacobian
+
+Derivative  Đạo hàm một biến                            Scalar
+Gradient    Đạo hàm của một output theo nhiều input     nx1
+Jacobian    Đạo hàm nhiều output theo nhiều input      mxn
+Hessian     Đạo hàm bậc hai của một scalar function     nxn

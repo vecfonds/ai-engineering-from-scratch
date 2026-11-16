@@ -7,7 +7,7 @@ Every work embedding is a vector.
 Mỗi từ núng là một vector.
 
 Every layer of every neural network is a matrix transformation.
-Mỗi lớp của mỗi mạng lứoi thần kinh là một phép biến đổi ma trận.
+Mỗi lớp của mỗi mạng lưới thần kinh là một phép biến đổi ma trận.
 
 You cannot build AI systems without being fluent in matrix operations the same way you cannot write code without understanding variables.
 Bạn không thể xây dựng hệ thống AI nếu không thông thạo các phép toán ma trận giống như cách bạn không thể viết mã mà không hiểu các biến.
