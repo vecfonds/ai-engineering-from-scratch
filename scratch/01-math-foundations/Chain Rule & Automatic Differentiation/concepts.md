@@ -122,8 +122,83 @@ Vì vậy, Reverse Mode rất phù hợp với việc huấn luyện Deep Learni
 
 - Forward Mode và Reverse Mode: Hai phương pháp tính đạo hàm trong Automatic Differentiation.
     Forward Mode: Đạo hàm truyền xuôi cùng quá trình tính toán
-    Reverse Mode: Đạo hàm truyền ngượ từ output về input
+    Reverse Mode: Đạo hàm truyền ngược từ output về input
 
-1. Forward Pass - Lan truyền xuôi
-Forward Pass là qúa trình đưa dữ liệu đầu vào qua các phép tính của mô hình để tạo ra kết quả dự đoán.
+Bạn hãy ghi nhớ một ý cốt lõi:
+
+Forward Pass không chỉ để tạo ra Prediction và Loss. Nó còn chuẩn bị và lưu những giá trị cần thiết để Reverse Mode tính Gradient ở lượt Backward Pass.
+
+Đó chính là lý do hai giai đoạn này phải phối hợp với nhau.
+
+4. Xây dựng Autograd Engine bằng Python
+
+4.1 Autograd là gì?
+Autograd viết tắt của Automatic Differentiation (vi phân tự động).
+Đây là cơ chế tự động tính đạo hàm của một hàm số thông qua các phép toán đã thực hiện.
+
+PyTorch không cần bạn viết công thức đạo hàm. Nó theo dõi các phép toán, xây dựng Computational Graph và tính Gradient tự động.
+
+4.2 Thiết kế một Autograd Engine mini
+Một Node trong Computational Graph cần có:
+        data            giá trị của node / giá trị Forward
+        grad            Gradient của node
+        _prev           Các node đầu vào
+        _backward       Hàm tính Gradient ngược
+        op              phép toán tạo ra node
+
+4.3 Xây dựng lớp Value
+
+Class Value:
+        def __init__(self, data, _children=(), op=''):
+                self.data = data
+                self.grad = 0.0
+
+                self._prev = set(_children)
+                self._op = op
+
+                self._backward = lambda: None
+        
+        def __repr__(self):
+                return f"Value(data={self.data}, grad={self.grad})"
+
+- data: lưu giá trị số của node.
+- grad: lưu đạo hàm của node đối với node đầu ra cuối cùng (sau khi thực hiện Backward Pass giá trị này sẽ được cập nhật).
+- _prev: lưu những node tạo ra node hiện tại (tham chiếu).
+- _backward: chứa logic để truyền Gradient ngược về các node trước đó. (ban đầu ta chưa thực hiện phép toán nào nên sử dụng hàm rỗng)
+
+4.4 Xây dựng phép công - Addition
+        def __add__(self, other):
+                other = other if isinstance(other, Value) else Value(other)
+
+                out = Value(
+                        self.data + other.data,
+                        (self, other),
+                        '+'
+                )
+
+                def _backward():
+                        self.grad += out.grad
+                        other.grad += out.grad
+                
+                out._backward = _backward
+
+                return out
+
+4.5 Xây dựng phép nhân - Multiplication
+
+        def __mul__(self, other):
+                other = other if isinstance(other, Value) else Value(other)
+
+                out = Value(
+                        self.data*other.data,
+                        (self,other),
+                        '*'
+                )
+
+                def _backward():
+                        self.grad += other.data*out.grad
+                        other.grad += self.data*out.grad
+
+                out._backward = _backward
+                return out
 
