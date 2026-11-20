@@ -42,7 +42,7 @@ Kết quả: y=7
 
 
 2.3 Backward Pass - Lan truyền ngược
-Giả sử chúng ta myoons biết:
+Giả sử chúng ta muốn biết:
 - Nếu thay đổi x1, kết quả y thay đổi thế nào?
 - Nếu thay đổi x2, kết quả y thay đổi thế nào?
 - Nếu thay đổi b, kết quả y thay đổi thế nào?
@@ -201,4 +201,58 @@ Class Value:
 
                 out._backward = _backward
                 return out
+
+4.6 Thêm các phép toán khác
+Để có thể sử dụng thuận tiện hơn, chúng ta bổ sung phép lũy thừa, phép chia và hỗ trợ số ở bên trái.
+
+5. Backward Pass - Tự động truyền Gradient
+
+5.1 Topological Sort là gì?
+Giả sử có đồ thị:       x -> a -> b -> y
+
+Khi truyền Gradient ngược, chúng ta phải bắt đầu từ y sau đó đến b, a và cuối cùng là x.
+Nếu gọi _backward() tuỳ tiện, một node có thể được tính Gradient trước khi nhận đầy đủ Gradient từ các node phía sau.
+
+Topological Sort giúp xác định thứ tự xử lý hợp lệ của các node trong Computational Graph.
+
+5.2 Xây dựng hàm backward()
+
+        def backward(self):
+                topo = []
+                visited = set()
+
+                def build_topo(v):
+                        if v not in visited:
+                                visited.add(v)
+
+                                for child in v._prev:
+                                        build_topo(child)
+                                
+                                topo.append(v)
+                        
+                build_topo(self)
+                
+                self.grad = 1
+
+                for v in reversed(topo):
+                        v._backward()
+
+6. Liên hệ với Neural Network
+Một Neural Network có các thành phần:
+- Input: nhận dữ liệu
+- Weights: trong số của các kết nối
+- Bias: đọ lệch
+- Activation Function: hàm kích hoạt
+- Output: kết quả dự đoán
+- Loss Function: đo sai số dự đoán
+
+Quy trình huấn luyện:
+        Input 
+        -> Forward Pass (tính toán Prediction)
+        -> Loss Function (tính sai số)
+        -> Backward Pass (tính gradient bằng autograd)
+        -> Optimizer (cập nhật các Weights và Bias)
+Lặp lại cho đến khi mô hình học được.
+=> đây chính là nền tảng của quá trình Training trong Deep Learning.
+
 
