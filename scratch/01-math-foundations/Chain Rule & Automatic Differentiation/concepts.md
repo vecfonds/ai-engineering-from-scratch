@@ -237,12 +237,19 @@ Topological Sort giúp xác định thứ tự xử lý hợp lệ của các no
                 for v in reversed(topo):
                         v._backward()
 
-6. Liên hệ với Neural Network
+6. Backpropagation trong Neural Network
+Làm thế nào để Neural Network biết phải thay đổi từng Weight và Bias bao nhiêu để dự đoán chính xác hơn?
+-> Backpropagation kết hợp với Gradient Descent.
+
+6.1 Cấu trúc của một Neural Network
+
 Một Neural Network có các thành phần:
-- Input: nhận dữ liệu
-- Weights: trong số của các kết nối
-- Bias: đọ lệch
-- Activation Function: hàm kích hoạt
+- Input Layer: nhận dữ liệu đầu vào
+- Hidden Layer: học các đặc trưng từ dữ liệu
+- Output Layer: tạo ra dự đoán
+- Weights: trong số của các kết nối, điều chỉnh mức độ ảnh hưởng giữa các Neuron.
+- Bias: độ lệch, điều chỉnh giá trị đầu ra của Neuron.
+- Activation Function: hàm kích hoạt, tạo tính phi tuyến cho mô hình.
 - Output: kết quả dự đoán
 - Loss Function: đo sai số dự đoán
 
@@ -255,4 +262,261 @@ Quy trình huấn luyện:
 Lặp lại cho đến khi mô hình học được.
 => đây chính là nền tảng của quá trình Training trong Deep Learning.
 
+Neural Network sẽ học các Weights và Biases để đưa ra dự đoán phù hợp với dữ liệu thực tế.
+
+
+6.2 Một Neuron hoạt động như thế nào?
+Đây là thành phần cơ bản nhất của Neural Network.
+Một Neuron nhận nhiều đầu vào, nhân từng đầu vào với Weight tương ứng, cộng Bias rồi đưa qua Activation Function.
+
+Công thức:      z = w1x1 + w2x2 + b
+
+Sau đó:         a = f(z)
+
+Trong đó:
+- x1, x2: input
+- w1, w2: Weights
+- b: Bias
+- z: Weighted Sum
+- f: Activation Function
+- a: Output của Neuron
+
+Một Artificial Neuron thường có 4 thành phần:
+- Inputs (đầu vào)
+        Giả sử chúng ta muốn xây dựng một mô hình dự đoán giá nhà dựa trên 2 yếu tố:
+        x1: diện tích căn nhà
+        x2: số phòng ngủ
+
+        VD: x1=100      x2=3
+        Neuron nhận 2 giá trị này làm đầu vào
+
+- Weights (trong số)
+        Mỗi input sẽ có một trong số tương ứng:
+        w1: mức độ ảnh hưởng của diện tích
+        w2: mức độ ảnh hưởng của số phòng ngủ
+
+        Giả sử: w1=0.8  w2=0.5
+        Trọng số thể hiện mức độ quan trọng mà mô hình gán cho từng input.
+
+        Neuron thực hiện phép nhân từng input với trọng số tương ứng:
+                x1w1 + x2w2
+        Thay số:
+                100*0.8+3*0.5=81.5
+        
+- Bias (độ lệch)
+        Bias là một tham số bổ sung được cộng vào tổng có trọng số.
+
+        Giả sử: b=2
+        khi đó:
+                z = x1w1 + x2w2 + b
+                z = 100*0.8 + 3*0.5 + 2 = 83.5
+        
+        Bias giúp mô hình linh hoạt hơn trong việc học mối quan hệ giữa input và output.
+
+-Activation Function (hàm kích hoạt)
+        Sau khi tính toán z, neuron đưa giá trị này qua một Activation Function.
+                a = f(z)
+        Trong đó:
+                z: tổng có trọng số cộng bias
+                f: Activation Function
+                a: output của neuron
+        
+        Một số Activation Function phổ biến:
+        - ReLU: f(x) = max(0,x)
+                Giá trị âm thành 0, giá trị dương được giữ nguyên.
+        - Sigmoid
+                Đưa giá trị về khoảng (0,1)
+        -Tanh:  f(x) = tanh(x)
+                Đưa giá trị về khoảng (-1,1)
+        
+6.3 Tại sao cần Activaton Function?
+Nếu không có Activation Function phi tuyến, việc xếp chồng nhiều Linear Layer vẫn chỉ tạo ra một phép biến đổi tuyến tính.
+
+        a = w1x1 + w2x2 + b
+VD:
+        h = W1x + b1
+        y = W2h + b2
+
+Thay h vào:
+        y = W2(W1x+b1) + b2
+        y = (W2W1)x + (W2b1 + b2)
+
+Đây vẫn là một phép biến đổi tuyến tính.
+Activation Function giúp Neural Network học được các quan hệ phi tuyến phức tạp.
+
+Một số Activation Function phổ biến:
+- ReLU: được sử dụng rộng rãi trong Hidden Layers
+- Sigmoid: đầu ra nằm trong khoảng (0,1), thường dùng ở Output Layer cho binary classification
+- Tanh: đầu ra nằm trong khoảng (-1,1)
+
+Một điểm rất quan trọng: Activation Function cũng là một phép toán trong Computational Graph. Vì vậy, khi Backward Pass diễn ra, chúng ta phải tính đạo hàm của nó.
+
+VD:                | 1 x>0
+        ReLU'(x) = |
+                   | 0 x<0
+Tại x=0, ReLU không khả vi theo nghĩa thông thường; trong thực tế, framework chọn một quy ước cho Gradient tại điểm này.
+
+6.4 Xây dựng một Neural Network hoàn chỉnh
+Bây giờ chúng ta kết hợp các neuron thành một mạng Neural Network.
+Xét kiến trúc:
+- 2 Input Neurons
+- 2 Hidden Neurons
+- 1 Output Neuron
+
+Đây là mạng có kiến trúc 2 -> 2 -> 1
+
+Bước 1: Hidden Layer
+Hai đầu vào:    x1, x2
+Hidden Neuron thứ nhất:
+        z1 = w1x1 + w2x2 + b1
+        
+        h1 = ReLU(z1)
+
+Hidden Neuron thứ 2:
+        z2 = w3x1 + w4x2 + b2
+
+        h2 = ReLU(z2)
+
+Như vậy, Hidden Layers nhận 2 giá trị đầu vào và tạo ra 2 giá trị mới:
+        h1, h2
+
+Bước 2: Output Layer
+Output Neuron nhận 2 giá trị từ Hidden Layer:
+        z3 = w5h1 + w6h2 +b3
+
+Giả sử sử dụng Linear Activation ở Output Layer:
+        y^ = z3
+
+Kết quả y^ là giá trị dự đoán của Neural Network.
+
+Bước 3: Loss Function
+Giả sử giá trị thực tế là:
+        y = 10
+Nhưng Neural Network dự đoán:
+        y^ = 7
+
+Chúng ta cần một cách đo lường mức độ sai lệch.
+Sử dụng Mean Squared Error (MSE) cho một mẫu:
+        L = (y^ - y)^2
+
+Thay số: L = (7-10)^2 = 9
+
+Loss càng nhỏ thì dự đoán càng gần giá trị thực tế.
+
+Lưu ý: Với một mẫu dữ liệu, công thức trên là Squared Error; MSE là trung bình Squared Error trên nhiều mẫu.
+
+6.5 Backpropagation - Truyền Gradient ngược qua Neural Network
+Chúng ta đã biết Forward Pass tạo ra Prediction và Loss.
+Nhưng làm thế nào mô hình biết cần điều chỉnh w1, w2,... như thế nào?
+
+Chúng ta cần tính đạo hàm riêng:
+        dL      dL
+        --- ,   ---, ...
+        dw1     dw2
+
+Đây là Grandient của Loss theo từng Weight.
+
+6.5.1 Bắt đầu từ Output Layer
+Ta có:  L = (y^ - y)^2
+Đạo hàm riêng Loss theo Prediction:
+        dL
+        -- = 2(y^-y)=-6
+        dy^
+
+Ý nghĩa: Nếu Prediction tăng một lượng nhỏ, Loss sẽ giảm xấp xỉ 6 lần lượng tăng đó tại điểm hiện tại.
+
+5.5.2 Gradient của Output Weights
+Ta có:  y^ = w5h1 + w6h2 + b3
+
+Theo đạo hàm:
+        dy^
+        -- = h1
+        dw5
+
+Áp dụng Chain Rule:
+        dL   dL   dy^
+        -- = -- . --
+        dw5  dy^  dw5
+
+Suy ra: dL
+        --- = 2(y^-y)*h1
+        dw5
+
+Tương tự:
+        dL
+        --- = 2(y^-y)*h2
+        dw6
+
+Với Bias:
+        dL
+        --- = 2(y^-y)
+        db3
+
+Gradient từ Loss được truyền ngược đến các Weight thông qua Chain Rule.
+
+6.5.3 Gradient truyền về hidden Layer
+Hidden Layer thứ nhất:
+        h1 = ReLU(z1)
+Trong đó:
+        z1 = w1x1 + w2x2 + b1
+
+Ta muốn tính:
+        dL
+        ---
+        dw1
+
+Nhìn vào đồ thị phụ thuộc:
+        w1 -> z1 -> h1 -> y^ -> L
+
+Áp dụng Chain Rule:
+        dL  dL  dy^ dh1 dz1
+        ---=---.---.---.---
+        dw1 dy^ dh1 dz1 dw1
+
+Ta đã biết:
+        dL
+        -- = 2(y^-y)
+        dy^
+
+        dy^
+        ---=w5
+        dh1
+
+Đạo hàm ReLU:
+        dh1
+        --- = ReLU'(z1)
+        dz1
+
+Cuối cùng:
+        dz1
+        --- = x1
+        dw1
+
+Kết hợp lại:
+        dL
+        --- = 2(y^-y).w5.ReLU'(z1).x1
+        dw1
+
+Đây chính là Backpropagation.
+
+Một điểm cần hiểu rõ: Gradient tại một node là đạo hàm của Loss theo node đó, không đơn thuần là đạo hàm của node trước đó.
+Nó thể hiện mức độ ảnh hưởng của node đến Loss cuối cùng.
+
+5.6 Gradient Descent - Cập nhật Weights và Bias
+Sau khi Backpropagation tính được Gradient, chúng ta cần sử dụng chúng để cập nhật các tham số.
+Đây là nhiệm vụ của Optimizer.
+Thuật toán cơ bản nhất là Gradient Descent.
+
+Công thức:              dL
+        w    = w    - a --
+         new    old     dw
+
+Trong đó:
+        w(old): Weight hiện tại
+        w(new): Weight mới
+        a: learning rate
+        dL/dw: Gradient
+
+Tại sao lại trừ Gradient?
+Gradient chỉ hướng mà Loss tăng nhanh nhất tại điểm hiện tại. Vì vậy, ta di chuyển theo hướng ngược lại để giảm Loss.
 
