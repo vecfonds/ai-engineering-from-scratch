@@ -82,3 +82,118 @@ Chúng ta có:
 Mô hình dự đoán Dog vì đây là lớp có xác suất cao nhất.
 Bạn sẽ gặp lại khái niệm này khi học Softmax và Classification.
 
+2. Conditional Probability - Xác suất có điều kiện
+
+2.1 Conditional Probability là gì?
+Tung một viên xúc xắc nhưng cung cấp thêm thông tin:
+Kết quả vừa tung là một số lớn hơn 3.
+Bây giờ, bạn cần tính xác suất kết quả đó là số chẵn.
+
+Ban đầu, có 6 kết quả có thể xảy ra:
+    S={1,2,3,4,5,6}
+Nhưng khi biết kết quả lớn hơn 3, chúng ta chỉ còn xem xét:
+    B={4,5,6}
+Trong phạm vi này, những kết quả chẵn là:
+    A={4,6}
+
+Do đó:
+    P(A|B)=2/3
+
+Ký hiệu P(A|B) đọc là:
+    Probability of A given B
+    - Xác suất A xảy ra với điều kiện B đã xảy ra.
+    - Xác suất có điều kiện của biến cố A khi biến cố B đã xảy ra.
+    - Xác suất A khi biết B đã xảy ra.
+    
+    Biến cố phụ thuộc: B xảy ra làm thay đổi khả năng xảy ra của A.
+    Biến cố độc lập: B xảy ra không ảnh hưởng đến A, khi đó P(A|B)=P(A)
+
+Điểm quan trọng: khi có thêm thông rin, không gian kết quả mà chúng ta xem xét có thể bị thu hẹp lại.
+
+2.2 Công thức Conditional Probability
+Công thức tổng quát:
+            P(A giao B)
+    P(A|B)=-------------
+                P(B)
+    
+Trong đó:
+    P(A|B): xác suất A khi biết B xảy ra
+    P(A giao B): xác suất cả A và B cùng xảy ra
+    P(B): xác suất B xảy ra
+
+Điều kiện:
+    P(B)>0
+
+Tại sao phải chia cho P(B)?
+Vì chúng ta đang xét xác suất bên trong phạm vi B đã xảy ra, chứ không còn xem toàn bộ không gian mẫu ban đầu.
+
+2.3 Phân biệt P(A|B) và P(B|A)
+Hai biểu thức có ý nghĩa khác nhau:
+- P(A|B): xác suất A xảy ra khi B đã xảy ra.
+- P(B|A): xác suất B xảy ra khi A đã xảy ra.
+
+Chúng không nhất thiết bằng nhau.
+
+Ví dụ trong bài toán dự đoán bệnh:
+- A: Một người thực sự mắc bệnh.
+- B: Kết quả xét nghiệm dương tính.
+
+Khi đó:
+    P(B|A)
+Là xác suất xét nghiệm dương tính khi người đó thực sự mắc bệnh.
+Biết người đó mắc bệnh → xét nghiệm có dương tính không?
+
+Ngược lại:
+P(A|B)
+Là xác suất người đó thực sự mắc bệnh khi đã nhận được kết quả xét nghiệm dương tính.
+Biết xét nghiệm dương tính → người đó có mắc bệnh không?
+
+2.4 Multiplication Rule – Quy tắc nhân xác suất
+Từ công thức Conditional Probability, nhân hai vế với P(B):
+    P(A giao B)=P(A|B) x P(B)
+
+Nó cho phép chúng ta tính xác suất hai biến cố cùng xảy ra.
+
+VD: một hộp có 3 viên bi đỏ và 2 viên bi xanh. Lấy ngẫu nhiên 2 viên bi liên tiếp, không hoàn lại.
+Gọi:
+    A: Lần đầu lấy được bi đỏ
+    B: lần thứ 2 lấy được bi đỏ
+
+Ta có:
+    P(A)=3/5
+
+Nếu lần đầu đã lấy được bi đỏ, hộp còn 2 bi đỏ trên tổng 4 viên.
+    P(B/A)=2/4
+
+Vậy xác suất cả 2 lần đều lấy được bi đỏ:
+    P(A giao B)=(3/5) x (2/4) = 0.3
+
+Lưu ý: vì không hoàn lại nên xác suất ở lần thứ 2 phụ thuộc vào kết quả lần thứ nhất.
+
+2.5 Independent Events - Hai biến cố độc lập
+Hai biến cố A và B được gọi là độc lập nếu việc xảy ra của biến cố này không ảnh hưởng đến xác suất xảy ra của biến cố kia.
+
+Điều kiện toán học:
+    P(A|B)=P(A)
+
+Tương đương:
+    P(A giao B) = P(A) x P(B)
+
+VD: Tung đồng xu 2 lần
+- A: lần thứ nhất xuất hiện mặt ngửa
+- B: lần thứ hai xuất hiện mặt ngửa
+Kết qủa lần thứ nhất không ảnh hưởng đến lần thứ 2.
+Do đó:
+    P(A)=1/2
+    P(B)=1/2
+    P(A giao B)=(1/2) x (1/2)=1/4
+
+So sánh 2 trường hợp:
+
+                    Có hoàn lại             Không hoàn lại
+Lần lấy tiếp theo   Không bị ảnh hưởng      có thể bị ảnh hưởng
+Xác suất            thường độc lập          thường phụ thuộc
+VD                  Rút bi, trả lại hộp     Rút bi, giữ lại
+
+Lưu ý quan trọng: Hai biến cố có xác suất bằng nhau không có nghĩa là chúng độc lập. Phải kiểm tra điều kiện xác suất ở trên.
+
