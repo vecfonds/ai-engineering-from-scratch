@@ -520,3 +520,47 @@ Trong đó:
 Tại sao lại trừ Gradient?
 Gradient chỉ hướng mà Loss tăng nhanh nhất tại điểm hiện tại. Vì vậy, ta di chuyển theo hướng ngược lại để giảm Loss.
 
+7. Gradient Checking - Kiểm tra tính chính xác của Gradient
+Làm thế nào biết Gradient mà Autograd tính ra là chính xác?
+
+7.1 Hai cách tính đạo hàm
+Cách 1: Analytical Gradient - Đạo hàm giải tích
+VD:     f(x)=x^2+3x+2
+        f'(x)=2x+3
+
+Tại x=2: f'(2)=7
+
+Đây là kết quả đạo hàm chính xác về mặt toán học.
+Trong Autograd Engine, chúng ta tính đạo hàm bằng cách kết hợp các đạo hàm cục bộ thông qua Chain Rule.
+
+Cách 2: Numerical Gradient - Đạo hàm số
+Thay vì tính đạo hàm trực tiếp bằng công thức, chúng ta có thể ước lượng đạo hàm bằng cách thay đổi một lượng rất nhỏ của đầu vào và quan sát sự thay đổi của đầu ra.
+
+VD:     f(x)=x^2+3x+2
+
+Tại x=2:
+        f(2)=12
+Tăng x một lượng nhỏ: h=0.001
+        f(2.001)=12.007001
+
+Đạo hàm được ước lượng:
+                f(2.001)-f(2)
+        f'(2)= ---------------
+                    0.001
+             =7.001
+
+Hai kết quả rất gần nhau.
+Đây là ý tưởng cốt lõi của Gradient Checking.
+
+7.2 Finite Difference Method - Phương pháp sai phân hữu hạn
+7.2.1 Central Difference
+                f(x+h)-f(x-h)
+        f'(x)= ---------------
+                    2h
+Thay vì quan sát một phía, chúng ta lấy cả hai phía của điểm x.
+
+7.3 So sánh Analytical Gradient và Numerical Gradient
+Hai phương pháp cho kết quả gần như giống nhau.
+
+7.4 Relative Error - Sai số tương đối
+Trong thực tế, Numerical Gradient có thể không hoàn toàn giống Analytical Gradient do sai số tính toán số thực.
