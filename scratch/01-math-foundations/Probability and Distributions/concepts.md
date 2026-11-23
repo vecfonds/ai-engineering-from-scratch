@@ -197,3 +197,71 @@ VD                  Rút bi, trả lại hộp     Rút bi, giữ lại
 
 Lưu ý quan trọng: Hai biến cố có xác suất bằng nhau không có nghĩa là chúng độc lập. Phải kiểm tra điều kiện xác suất ở trên.
 
+3. Bayes' Theorem – Định lý Bayes
+Bayes' Theorem giúp chúng ta cập nhật xác suất của một giả thuyết khi nhận được thông tin hoặc bằng chứng mới.
+
+3.1 Tại sao cần Bayes' Theorem?
+Ở phần trước, chúng ta đã phân biệt:
+    P(A|B)!=P(B|A)
+
+3.2 Công thức Bayes' Theorem
+        P(B|A) P(A)
+P(A|B)= -----------
+            P(B)
+
+Trong đó:
+    P(A|B) - Posterior: Xác suất giả thuyết A sau khi có bằng chứng B
+    P(B|A) - Likelihood: xác suất quan sát B nếu A đúng
+    P(A) - Prior: xác suất ban đầu của A
+    P(B) - Evidence: Xác suất quan sát được B
+
+Có thể ghi nhớ:
+                Likelihood x Prior
+    Posterior = ------------------
+                    Evidence
+    
+Đây là cách diễn giải Bayes' Theorem rất thường gặp trong Machine Learning.
+
+4. PMF vs PDF - Probability Mass Function và Probability Density Function
+Hai khái niệm quan trọng giúp chúng ta hiểu cách biểu diễn xác suất cho hai loại dữ liệu:
+Discrete Random Variables và Continuous Random Variables.
+
+4.1 Discrete và Continuous là gì?
+Discrete Random Variable - biến ngẫu nhiên rời rạc: là biến ngẫu nhiên chỉ nhận những giá trị riêng biệt, có thể đếm được.
+
+VD:
+    - Số mặt ngửa khi tung đồng xu 3 lần.
+    - Số khách hàng truy cập website.
+    - Số email Spam nhận được trong ngày.
+    - Số lần 1 token xuất hiện trong văn bản.
+
+Continuous Random Variable - Biến ngẫu nhiên liên tục: Là biến ngẫu nhiên có thể nhận mọi giá trị trong một khoảng liên tục.
+VD:
+    - Chiều cao của một người
+    - Nhiệt độ môi trường
+    - Thời gian xử lý một request
+    - Trọng lượng của một sản phẩm
+
+Giả sử thời gian xử lý request:
+    X thuộc [0,10]
+X có thể nhận các giá trị:
+    1, 1.5, 1.52, 1.432,...
+Không thể liệt kê tất cả các giá trị có thể xảy ra.
+
+4.2 PMF - Probability Mass Function
+PMF là hàm xác suất dành cho biến ngẫu nhiên rời rạc.
+Nó cho biết xác suất biến ngẫu nhiên X nhận chính xác một giá trị cụ thể.
+Ký hiệu:
+    PMF = P(X=x)
+
+Tổng xác suất của tất cả giá trị có thể xảy ra phải bằng 1.
+
+Trong ML, PMF rất hữu ích khi mô hình dự đoán các lớp rời rạc như Spam/Not Spam,Card/Dog/Bird,...
+
+4.3 PDF - Probability Density Function
+PDF là hàm mật độ xác suất dành cho biến ngẫu nhiên liên tục.
+Ký hiệu:
+    f(x)
+Xác suất của x nằm trong khoảng từ a đến b được tính bằng tích phân.
+
+Lưu ý: PDF có thể lớn hơn 1. Bởi vì PDF biểu diễn mật độ, không phải xác suất tại một điểm.
