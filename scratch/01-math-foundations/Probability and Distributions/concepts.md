@@ -265,3 +265,277 @@ Ký hiệu:
 Xác suất của x nằm trong khoảng từ a đến b được tính bằng tích phân.
 
 Lưu ý: PDF có thể lớn hơn 1. Bởi vì PDF biểu diễn mật độ, không phải xác suất tại một điểm.
+
+5. Common Probability Distributions - Các phân phối xác suất phổ biến
+Probability Distribution mô tả cách xác suất được phân bố trên các giá trị mà 1 Random Variable có thể nhận.
+
+5.1 Bernoulli Distribution
+A. Bernoulli Distribution mô tả một phép thử ngẫu nhiên chỉ có 2 kết quả có thể xảy ra:
+    - Success (thành công): X = 1
+    - Failure (thất bại):   X = 0
+
+VD:
+    Tung đồng xu: ngửa hoặc sấp
+    Email: Spam hoặc Not Spam
+    Khách hàng: Mua hàng hoặc không mua hàng
+    Model: dự đoán đúng hoặc dự đoán sai
+
+Giả sử chúng ta có một đồng xu không cân bằng:
+- Xác suất xuất hiện mặt ngửa: 0.7
+- Xác suất xuất hiện mặt sấp : 0.3
+
+Ta có:
+    P(X=1)=0.7
+    P(X=0)=0.3
+
+Ký hiệu:
+    X ~ Bernoulli(p)
+
+Trong đó o là xác suất thành công.
+
+B. Công thức PMF
+Công thức tổng quát:
+              x      1-x
+    P(X=x) = p  (1-p)
+
+Với: x {0,1}
+
+Công thức trên gộp hai trường hợp vào một biểu thức duy nhất.
+
+C. Expected Value và Variance
+Expected value:
+    E[X] = p
+Variance:
+    Var(X) = p(1-p)
+
+Lưu ý: Expected Value là giá trị trung bình theo lý thuyết khi thực hiện phép thử rất nhiều lần, không có nghĩa một lần tung đồng xu sẽ cho kết quả 0.7
+
+D. Ứng dụng trong ML
+Giả sử xây dựng mô hình dự đoán khách hàng có mua hàng hay không.
+Model trả về:
+    P(X=1)=0.85
+    P(X=0)=0.15
+
+Có nghĩa mô hình dự đoán xác suất khách hàng mua hàng là 85%.
+Đây là một bài toán Binary Classification.
+
+5.2 Categorical Distribution
+A. Categorical Distribution là gì?
+Khi có nhiều hơn 2 kết quả.
+
+VD: xây mô hình phân loại hình ảnh thành:
+    Cat
+    Dog
+    Bird
+Chúng ta có 3 kết quả có thể xảy ra.
+
+Giả sử mô hình dự đoán:
+Class           Probability
+Cat             0.6
+Dog             0.3
+Bird            0.1
+Tổng            1.0
+
+Đây là một Categorical Distribution.
+
+Ký hiệu:
+    X ~ Categorical(p1, p2,...,pk)
+
+Trong đó:
+    k: số lượng lớp
+    p(i): xác suất của lớp thứ i
+
+Điều kiện:
+    Tổng xác suất = 1
+
+B. PMF của Categorical Distribution
+Giả sử có 3 lớp:
+    P=[0.6,0.3,0.1]
+Ta có:
+    P(X=Cat)=0.6
+    P(X=Dog)=0.3
+    P(X=Bird)=0.1
+
+Khác với Bernoulli, biến ngẫu nhiên có thể nhận một trong k giá trị phân loại.
+
+C. Ứng dụng trong DL.
+Khi Neural Network thực hiện Multi-class Classificaiton, đầu ra thường được chuyển thành xác suất bằng Softmax.
+Neural Network không trực tiếp đưa ra kết luận Cat. Nó tạo ra các giá trị đầu ra, sau đó Softmax chuyển chúng thành phân phối xác suất.
+Đây cũng là lý do Categorical Distribution rất quan trọng khi học LLM: mô hình ngôn ngữ dự đoán phân phối xác suất trên tập token có thể xuất hiện tiếp theo.
+
+D. Bernoulli vs Categorical
+Tiêu chí        Bernoulli       Categorical
+Số kết quả      2               k kết quả
+VD              Spam/Not spam   Cat/Dog/Bird
+Tham số         p               p1,p2,...,pk
+Tổng xác suất   1               1
+Ứng dụng        Binary          Multi-class Classification 
+                Classification
+
+Ghi nhớ: Bernoulli là trường hợp đặc biệt của Categorical Distribution khi chỉ có 2 lớp dữ liệu.
+
+5.3 Uniform Distribution - Phân phối đều
+A. Uniform Distribution là gì?
+Uniform Distribution mô tả tình huống mà các kết qủa trong một phạm vi có xác suất như nhau (đối ới rời rạc) hoặc có mật độ xác suất như nhau (đối với liên tục).
+
+Có 2 loại:
+- Discrete Uniform Distribution
+- Continuous Uniform Distribution
+
+B. Discrete Uniform Distribution
+VD: Tung 1 viên xúc xắc công bằng.
+Các kết quả từ 1 đến 6 đều có xác suất bằng nhau:
+    P(X=x)=1/6
+Tổng xác suất = 1
+Đây là Discrete Uniform Distribution.
+
+C. Continuous Uniform Distribution
+Giả sử thời gian xử lý 1 request được mô hình hoá đồng đều trong khoảng 0 đến 10 giây.
+Khi đó:
+    X ~ Uniform(a,b)
+Với:
+    a=0, b=10
+
+PDF:
+    f(x)=0.1
+Mât độ xác suất tại mọi điểm trong khoảng [0,10] đều bằng 0.1
+Giả sử muốn tính xác suất request được xử lý từ 2 đến 5 giây:
+    P(2<=X<=5) = đạo hàm từ 2 đến 5 của 0.1
+               = 0.1(5-2)=0.3
+Vậy xác suất là 30%
+
+D. Expected Value và Variance
+Đối với Continuous Uniform Distribution:
+Expected Value:
+          a+b
+    E[X]=-----
+           2
+
+Variance:
+            (b-a)^2
+    Var(X)=---------
+               12
+
+VD với khoảng [0,10]:
+          0+10
+    E[X]=------=5
+            2
+             (10-0)^2
+    Var(X) =--------- = 8.33
+                12
+
+E. Ứng dụng trong AI
+Uniform Distribution thường được sử dụng trong:
+    Random initialization
+    Random sampling
+    Data augmentation
+    Monte Carlo Simulation
+
+VD, khi khởi tạo 1 số tham số hoặc sinh dữ liệu ngẫu nhiên trong 1 khoảng, chúng ta có thể lấy mẫu từ Uniform Distribution.
+
+import numpy as np
+
+samples = np.random.uniform(
+    low=0,
+    high=10,
+    size=5
+)
+
+print(samples)
+
+Mỗi lần chạy, chương trình sẽ tạo ra 5 giá trị ngẫu nhiên trong khoảng từ 0 đến 10.
+
+5.4 Normal Distribution - Gaussian Distribution
+Normal Distribution (phân phối chuẩn) là một phân phối xác suất liên tục có dạng hình chuông (Bell Curve).
+
+Nó xuất hiện trong rất nhiều hiện tượng tự nhiên và các mô hình thống kê.
+VD:
+    Chiều cao con ngừoi
+    sai số đo lường
+    nhiễu trong dữ liệu
+    sai số dự đoán của một số mô hình
+
+Hãy tưởng tượng chúng ta đo chiều cao của 10000 ngừoi.
+
+Thông thường:
+    phần lớn mọi người có chiều cao gần mức trung bình
+    Số ngừoi quá thấp ít hơn
+    Số ngừoi qúa cao cũng ít hơn.
+
+Dữ liệu có thể tạo thành hình dạng gần giống đường cong hình chuông.
+
+B. Công thức PDF
+C. Mean - Trung bình
+Mean quyết định vị trí trung tâm của phân phối.
+D. Standard Deviation - Độ lệch chuẩn
+Standard Deviation quyết định độ phân tán của dữ liệu quanh Mean.
+    Sigma nhỏ: dữ liệu tập trung gần Mean
+    Sigma lớn: dữ liệu phân tán rộng hơn
+
+Cả 2 có Mean bằng 170 nhưng độ phân tán khác nhau.
+
+E. Empirical Rule - Quy tắc 68-95-99.7
+Đây là quy tắc rất quan trọng khi làm việc với Normal Distribution.
+
+F. Standard Normal Distribution
+Một trường hợp đặc biệt của Normal Distribution là Standard Normal Distribution:
+    Z ~ N(0,1)
+
+G. Ứng dụng trong DL
+Normal Distribution xuất hiện trong nhiều khía cạnh:
+- Weight Initialization: một số phương pháp khởi tạo trọng số sử dụng phân phối chuẩn.
+- Gaussian Noise: Thêm nhiễu vào dữ liệu hoạc đầu vào mô hình.
+- Variational Autoencoders (VAE): thường mô hình hoá latent variables bằng Gaussian Distribution.
+- Probabilistic Models: mô hình hoá dữ liệu và sự không chắc chắn.
+
+5.5 Poisson Distribution - Phân phối Poisson
+A. Poisson Distribution là gì?
+Poisson Distribution mô tả xác suất xảy ra 1 số lượng sự kiện nhất định trong một khoảng thời gian hoặc không gian cố định, khi các sự kiện xảy ra độc lập với 1 tốc độ trung bình ổn định.
+
+VD:
+    Số request đến server trong 1 giây.
+    Số khách hàng đến cửa hàng trong 1 giờ
+    Số lỗi xảy ra trong 1 ngày
+    Số email nhận được trong 1 phút
+Giả sử 1 server trung bình nhận được 3 request mỗi giây.
+Chúng ta muốn tính xác suất servẻ nhận đúng 5 request trong 1 giây.
+Đây là 1 bài toán phù hợp với Poisson Distribution.
+
+B. Công thức PMF
+Ký hiệu:
+    X ~ Poisson(lambda)
+Trong đó:
+    X: số lần sự kiện xảy ra
+    lambda: số sự kiện trung bình trong khoảng thời gian hoặc không gian đang xét.
+
+D. Expected Value và Variance
+Đây là điểm đặc biệt của Poisson Distribution:
+    E[X]= lambda
+    Var(X)= lambda
+
+F. Ứng dụng trong AI và Engineering
+Poisson Distribution có thể được sử dụng để:
+- Mô hình hoá số lượng sự kiện xảy ra
+- Phân tích lưu lượng request
+- Phát hiện bất thường (Anomaly Detection)
+- Phân tích tần suất lỗi
+- Mô hình hoá số lượng sự kiện trong dữ liệu
+
+Lưu ý: Poisson thường phù hợp khi các sự kiện xảy ra độc lập và tốc độ trung bình ổn định trong khoảng đang xét. Dữ liệu thực tế không phải lúc nào cũng thoả mãn các giải định này.
+
+5.6 Tổng hợp 5 phân phối xác suất
+
+Distribution    Loại                        Đặc điểm            Ứng dụng
+Bernoulli       Discrete                    2 kết quả           Binary Classification
+Categorical     Discrete                    k kết quả           Multi-class Classification
+Uniform         Discrete/Continuous         Đồng đều            Random Sampling
+Nornal          Continuous                  Hình chuông         Weight Initialization, Gaussian Noise
+Poisson         Discrete                    Số lần sự kiện      Request Counting, Anomaly Detection
+
+Cách lựa chọn Distribution:
+    Chỉ có 2 kết qủa: 0 hoặc 1? Bernoulli
+    Có nhiều lớp phân loại khác nhau?   Categorical
+    Các giá trị trong 1 khoảng đồng đều?    Uniform
+    Dữ liệu tập trung quanh giá trị trung bình, có dạng hình chuông?    Normal
+    Số lần sự kiện xảy ra trong 1 khoảng cố định?   Poisson
+
