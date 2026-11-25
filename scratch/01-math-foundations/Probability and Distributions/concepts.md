@@ -539,3 +539,175 @@ Cách lựa chọn Distribution:
     Dữ liệu tập trung quanh giá trị trung bình, có dạng hình chuông?    Normal
     Số lần sự kiện xảy ra trong 1 khoảng cố định?   Poisson
 
+6. Expected Value & Variance - Giá trị kỳ vọng và phương sai
+Hai khái niệm quan trọng để hiểu cách dữ liệu phân bổ, đánh giá sự biến thiên và nền tảng của nhiều thuật toán ML.
+
+Expected Value (E): cho biết giá trị trung bình mà chúng ta kỳ vọng nhận được.
+Variance (Var): cho biết dữ liệu phân tán quanh giá trị trung bình nhiều hay ít.
+
+6.1 Expected Value - Giá trị kỳ vọng
+A. Expected Value là gì?
+Nếu bạn tung xúc xắc 1 lần, bạn không biết kết quả sẽ là bao nhiêu/
+Nhưng nếu tung hàng nghìn lần, giá trị trung bình của các kết quả sẽ tiến gần đến:
+    1+2+3+4+5+6
+    -----------=3.5
+        6
+
+Giá trị 3.5 chính là Expected Value.
+
+Ký hiệu:
+    E[X]
+
+Điều quan trọng: Expected Value không nhất thiết phải là 1 kết quả có thể xuất hiện trong thực tế.
+VD: khi tung xúc xắc, không thể xuất hiện 3.5 nhưng Expected Value vẫn bằng 3.5
+
+B. Công thức tính Expected Value cho Discrete Random Variable
+Với biến ngẫu nhiên rời rạc:
+    E[X]=tổng xP(X=x)
+
+Có thể hiểu đơn giản:
+    Expected Value = Tổng của (giá trị x xác suất xuất hiện giá trị đó)
+
+C. Công thức Expected Value cho Continuous Random Variable
+Với biến ngẫu nhiên liên tục, chúng ta thay phép tổng bằng tích phân:
+
+    E[X]=tích phân từ âm vô cực đến dương vô cực của xf(x)
+Trong đó:
+    x: giá trị của biến ngẫu nhiên
+    f(x): PDF của biến ngẫu nhiên
+
+D. Expected Value của các Distribution đã học
+Bernoulli
+    p
+
+Categorical
+    tổng pi xi
+
+Discrete Uniform  
+    a+b
+    ---
+     2
+
+Continuous Uniform
+    a+b
+    ---
+     2
+
+Normal
+    Muy
+
+Poisson
+    Lambda
+
+6.2 Variance - Phương sai
+A. Tại sao cần Variance?
+Variance đo lường mức độ phân tán của các giá trị xung quanh Expected Value.
+
+B. Xây dựng công thức Variance
+Bước 1: tính độ lệch so với Mean
+    X-Mu
+
+Bước 2: bình phương độ lệch
+Nếu cộng các độ lệch ban đầu, các giá trị âm và dương triệt tiêu nhau.
+Do đó, chúng ta bình phương để loại bỏ dấu âm và làm nổi bật những độ lệch lớn.
+
+Bước 3: tính trung bình bình phương độ lệch
+
+C. Công thức Variance
+    Var(X)=E[(X-u)^2]
+
+Viết dứoi dạng tổng:
+    Var(X)=tổng (x-u)^2 P(X=x)
+
+trong đó:
+    u=E[X]
+
+
+Với biến ngẫu nhiên liên tục:
+    Var(X)=từ âm vô cùng tới dương vô cùng đạo hàm của (x-u)^2 f(x)
+
+D. Công thức rút gọn của Variance
+
+    Var(X)=E[X^2]-(E[X])^2
+
+Chứng minh công thức:
+    Var(X)=E[(X-u)^2]
+          =E[X^2-2uX+u^2]
+          =E[X^2]-2uE[X]+E[u^2]
+
+    Vì u là hằng số và E[X]=u
+          =E[X^2]-2u^2+u^2
+          =E[X^2]-(E[X])^2
+
+Điểm cần phân biệt:
+    E[X^2]: kỳ vọng của bình phương X
+    (E[X])^2: bình phương của kỳ vọng X
+
+
+6.3 Standard Deviation - Độ lệch chuẩn
+Variance giúp đo mức độ phân tán, nhưng có 1 nhược điểm: đơn vị của nó bị bình phương.
+Điều này không trực quan khi diễn giải dữ liệu.
+Vì vậy, chúng ta sử dụng Standard Deviation.
+
+Ký hiệu:
+    sigma
+
+Công thức:
+    sigma = căn Var(X)
+
+Standard Deviation có cùng đơn vị với dữ liệu ban đầu.
+
+So sánh Mean, Variance và Standard Deviation
+
+Mean                    Trung tâm dữ liệu
+Variance                Mức độ phân tán của dữ liệu quanh giá trị trung bình đó, tính bằng bình phương độ lệch
+Standard Deviation      Mức độ phân tán của dữ liệu quanh giá trị trung bình đó
+
+Minh hoạ với Normal Distribution
+Giả sử:
+    X ~ N(100, 10^2)
+
+Ta có:
+    Mean=100
+    Variance=100
+    Standard Deviation=10
+
+Theo quy tắc 68-95-99.7:
+    Khoảng 68% dữ liệu nằm trong [90, 110].
+    Khoảng 95% dữ liệu nằm trong [80, 120].
+    Khoảng 99.7% dữ liệu nằm trong [70, 130].
+
+Lưu ý: Quy tắc này áp dụng cho phân phối chuẩn hoặc dữ liệu có phân phối gần chuản, không phải mọi phân phối.
+
+6.4 Sample Variance và Population Variance
+Giả sử bạn muốn tính chiều cao trung bình của toàn bộ sinh viên HCMUT.
+Có 2 trường hợp:
+    Population (tổng thể): bạn có dữ liệu chiều cao của tất cả sinh viên.
+    Sample (mẫu): bạn chỉ thu thập dữ liệu của 500 sinh viên đại diện.
+Hai trường hợp này có công thức Variance khác nhau.
+
+A. Population Variance
+Khi có toàn bộ dữ liệu của tổng thể:
+               1
+    sigma^2 = -- Tổng (x-u)^2
+               N
+
+Trong đó:
+    N: số lượng phần tử trong tổng thể
+    u: Mean của tổng thể
+
+B. Sample Variance
+Khi chi có 1 mẫu dữ liệu và muốn ước lượng Variance của tổng thể:
+             1
+    s^2 = ------- tổng (x-x_)^2
+            n-1
+
+Trong đó:
+    n: số phần tử của mẫu
+    x_: Mean của mẫu
+    n-1: Degrees of Freedom (bậc tự do)
+
+Tại sao chia cho n-1 thay vì n?
+Khi tính Mean từ chính mẫu dữ liệu, chúng ta đã sử dụng 1 thông tin để xác định x_. Điều này khiến các độ lệch quanh Mean mẫu có xu hướng nhỏ hơn độ lệch quanh Mean tổng thể thực sự.
+Chia cho n-1 giúp hiệu chỉnh sai lệch ddos, tạo ra một ước lượng không chệch của Population Variance khi các quan sát được lấy mẫu độc lập từ cùng 1 phân phối có phương sai hữu hạn.
+
