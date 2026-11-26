@@ -711,3 +711,123 @@ Tại sao chia cho n-1 thay vì n?
 Khi tính Mean từ chính mẫu dữ liệu, chúng ta đã sử dụng 1 thông tin để xác định x_. Điều này khiến các độ lệch quanh Mean mẫu có xu hướng nhỏ hơn độ lệch quanh Mean tổng thể thực sự.
 Chia cho n-1 giúp hiệu chỉnh sai lệch ddos, tạo ra một ước lượng không chệch của Population Variance khi các quan sát được lấy mẫu độc lập từ cùng 1 phân phối có phương sai hữu hạn.
 
+
+7. Joint & Marginal Distributions
+Trong Machine Learning, 1 sample thường có nhiều features cùng lúc.
+VD, 1 sinh viên:
+    X: số giờ học
+    Y: số giờ ngủ
+    Z: điểm thi
+Ta không chỉ muốn biết phân phối của từng biến riêng lẻ, mà còn muốn hiểu các biến này phân phối cùng nhau như thế nào.
+Đó chính là mục đích của Joint Distribution.
+
+7.1 Joint Probability Distribution
+7.1.1 Joint Distribution là gì?
+Joint Probability Distribution (phân phối xác suất đồng thời) mô tả xác suất để nhiều biến ngẫu nhiên đồng thời nhận những giá trị cụ thể.
+
+Với 2 biến ngẫu nhiên X và Y:
+    P(X=x, Y=y)
+Có thể đọc là:
+    Xác suất để X bằng x và Y bằng y
+
+VD:
+    X: kết quả tung đồng xu thứ nhất
+    Y: kết quả tung đồng xu thứ 2
+
+7.1.2 Biểu diễn bằng Joint Probability Table
+Ta có thể biểu diễn phân phối đồng thời bằng bảng:
+
+X\Y     Y=0     y=1
+X=0     0.25    0.25
+X=1     0.25    0.2
+
+Tổng tất cả xác suất = 1.00
+
+Mỗi ô trong bảng là xác suất để cả 2 biến đồng thời nhận giá trị tương ứng.
+
+VD: P(X=1, Y=0)=0.25
+Nghĩa là xác suất đồng xu thứ nhất ngửa và đồng xu thứ 2 sấp là 25%
+
+7.1.3 Điều kiện của Joint Distribution
+Tổng tất cả xác suất phải bằng 1.
+
+7.2 Marginal Distribution
+7.2.1 Marginal Distribution là gì?
+Giả sử chúng ta đã biết phân phối đồngthowif của 2 biến X và Y.
+Nhưng bây giờ chỉ myoons biết phân phối của X, không quan tâm đến Y.
+Chúng ta cần loại bỏ ảnh hưởng của Y bằng cách cộng xác suất qua tất cả giá trị có thể của Y.
+Đó là Marginal Distribution (phân phối biên).
+
+Công thức:
+    P (x) = Tổng P(X=x, Y=y)
+     X       y
+
+    P (y) = Tổng P(X=x, Y=y)
+     Y       x
+    
+Điểm cần nhớ: Marginal Distribution cho chúng ta biết phân phối của một biến riêng lẻ, bằng cách cộng xác suất trên tất cả khả năng của các biến còn lại.
+
+Với biến liên tục, phép cộng được thay bằng phép tích phân:
+
+    f (x)= tích phân từ âm vô cực đến dương vô cực f   (x,y)dy
+     X                                              X,Y
+
+7.3 Conditional Distribution
+7.3.1 Conditional Distribution là gì?
+Marginal Distribution trả lời:
+    X có phân phối như thế nào nếu không xét đến Y?
+Conditional Distributioon trả lời:
+    X có phân phối như thế nào khi đã biết Y nhận một giá trị cụ thể?
+
+Công thức:
+                 P(X=x, Y=y)
+    P(X=x|Y=y) = -----------
+                    P(Y=y)
+
+Điều kiện là P(Y=y)>0
+
+7.4 Independence - Độc lập giữa các biến
+7.4.1 Hai biến độc lập là gì?
+Hai biến ngẫu nhiên X và Y độc lập nếu việc biết giá trị của biến này không làm thay đổi phân phối xác suất của biến còn lại.
+
+Công thức:
+    P(X=x, Y=y) = P (x) P (y)
+                   X     Y
+
+Công thức này phải đúng với mọi cặp giá trị x,y.
+
+7.5 Liên hệ với Machine Learning
+7.5.1 Modeling data
+Giả sử Dataset có 2 features:
+    X: số giờ học
+    Y: Điểm thi
+
+Joint Distribution mô tả cách 2 features này xuất hiện cùng nhau:
+    P(X,Y)
+
+Marginal Distribution mô tả riêng phân phối số giờ học hoặc điểm thi:
+    P(X), P(Y)
+
+7.5.2 Machine Learning Prediction
+Giả sử:
+    X: thông tin đầu vào của một sample
+    Y: nhãn cần được dự đoán
+Một mục tiêu quan trọng trong supervised learning là học được:
+    P(Y/X)
+Nghĩa là xác suất 1 nhãn cụ thể xuất hiện khi đã biết dữ liệu đầu vào.
+
+VD trong bài toán phân loại email:
+    P(Spam|Email Content)
+
+Model dự đoán xác suất email thuộc lớp Spam dựa trên nội dung email.
+
+7.5.3 LLM - Next Token Prediction
+Trong LLM, mô hình học cách dự đoán token tiếp theo dựa trên các token trước đó:
+    P(xt|x1, x2, x3, ... , xt-1)
+Đây là một Conditional Distribution.
+
+Tóm tắt:
+Joint           Phân phối của nhiều biến đồng thời
+Marginal        Phân phối của 1 biến riêng lẻ
+Conditional     phân phối của một biến khi biết biến khác
+Independence    Hai biến không phụ thuộc xác suất vào nhau
