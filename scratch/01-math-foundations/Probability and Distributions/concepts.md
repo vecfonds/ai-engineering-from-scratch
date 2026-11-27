@@ -841,3 +841,183 @@ Ngay cả khi dữ liệu ban đầu không có phân phối chuẩn (Normal Dis
 CLT không nói rằng dữ liệu gốc sẽ trở thành phân phối chuẩn. Nó nói rằngphaan phối của các giá trị trung bình sẽ tiến gần đến phân phối chuẩn.
 
 Lưu ý: Sample là 1 tập dữ liệu. Sampling Distribution là phân phối của một thống kê qua nhiều lần lấy mẫu.
+
+
+9. Log Probabilities, Softmax & Cross Entropy
+9.1 Log Probabilities - Logarit của xác suất
+Giả sử modeal cần tình xác suất của 1 chuỗi gồm nhiều sự kiện độc lập.
+Khi số lượng sự kiện tăng lên, tích các xác suất nhỏ có thể trở nên cực kỳ nhỏ.
+Đây là vấn đề Numerical Underflow: máy tính có thể không biểu diễn chính xác những số quá nhỏ.
+
+Giải pháp: sử dụng Logarithm.
+
+9.1.2 Log Probability là gì?
+Log Probability đơn giản là lấy logarithm của xác suất:
+    logP(A)
+Trong ML, thường sử dụng Natual Logarithm (log cơ số e):
+    lnP(A)
+
+Điểm cần chú ý:
+    Xác suất càng gần 1 thì log càng gần 0
+    xác suất càng gần 0 thì log càng âm lớn
+    với 0<p<=1, log probability luôn nhỏ hơn hoặc bằng 0
+
+9.1.3 Ứng dụng trong LLM
+Giả sử LLM dự đoán 1 câu gồm 4 token:
+    I love machine learning
+
+Model dự đoán xác suất từng token dựa trên context trước đó:
+    P(I)=0.8
+    P(love/I)=0.7
+    P(machine/I,love)=0.6
+    P(learning/I,love,machine)=0.9
+
+Xác suất của cả chuỗi theo quy tắc chuỗi (chain rule):
+    P(sequence)=0.8 x 0.7 x 0.6 x 0.9
+               =0.3024
+        
+Log Probability:
+    logP(sequence)=log(0.8)+log(0.7)+log(0.6)+log(0.9)
+
+LLM thường làm việc với log probabilities vì tính toán trên chuỗi dài sẽ ổn định hơn.
+
+9.2 Softmax Function
+9.2.1 Vấn đề cần giải quyết
+Giả sử một Neural Network thực hiện bài toán phân loại ảnh gồm 3 class:
+    Cat
+    Dog
+    Bird
+
+Sau khi đi qua các layers, output cuối cùng của model là:
+    z=[2.0,1.0,0.1]
+
+Những giá trị này được gọi là Logits.
+
+Chúng chưa phải xác suất vì:
+    có thể là số âm hoặc số dương bất kỳ
+    không nhất thiết nằm trong khoảng [0,1]
+    tổng các giá trị không nhất thiết bằng 1
+
+Chúng ta cần chuyển Logits thành Probability Distribution.
+Đó là nhiệm vụ của Softmax.
+
+9.2.2 Công thức Softmax
+Với vector logits:
+    z=[z1,z2,...,zk]
+
+Softmax được định nghĩa:
+             e^zi
+    P(y=i)= --------
+            Tổng e^zj
+
+Trong đó:
+    zi: logit của class thứ i
+    e^zi: exponential của logit
+    Mẫu số: tổng. của exponential của tất cả logits
+    K: số class
+
+Softmax chuyển các logits thành xác suất.
+
+9.2.3 Tại sao phải dùng exponential?
+Có 3 đặc tính quan trọng:
+    e^z luôn dương, do đó xác suất không âm
+    giá trị logit lớn hơn sẽ có exponential lớn hơn
+    chia cho tổng các exponential đảm bảo tổng xác suất bằng 1
+
+Vì vậy Softmax tạo ra một valid probability distribution.
+
+9.2.4 Tại sao Softmax cần trừ giá trị lớn nhất?
+Trong thực tế Logits có thể rất lớn.
+Ví dụ:
+    z=[1000,1001,1002]
+Khi tính exponential trực tiếp, các giá trị có thể vượt quá giới hạn biểu diễn của máy tính.
+
+Để tránh điều này, ta sử dụng:
+                 e^(zi-max(z))
+    Softmax(zi)= ------------------
+                 Tổng e^(zj-max(z))
+
+Đây gọi là Numerically Stable Softmax.
+
+9.3 Cross-Entropy Loss
+9.3.1 Model cần học như thế nào?
+Giả sử model phân loại ảnh thành 3 class:
+    Cat
+    Dog
+    Bird
+Ảnh thực tế là Cat.
+
+Ground Truth (nhãn thực tế) được biểu diễn bằng One-Hot Encoding:
+    y=[1,0,0]
+Model dự đoán:
+    y^=[0.659,0.242,0.099]
+Ta muốn model dự đoán xác suất cao cho Cat.
+Nhưng làm thế naof để đo model đang dự đoán tốt hay tệ?
+Chúng ta cần 1 hàm Loss.
+
+9.3.2 Cross-Entropy là gì?
+Cross-Entropy đo mức độ khắc biệt giữa phân phối xác suất thực tế và phân phối xác suất mà model dự đoán.
+
+Công thức:
+    L = - Tổng từ i=1 đến K của y log(y^ )
+                                 i     i
+
+Trong đó:
+    yi: xác suất theo phối phối ground truth
+    yi^: xác suất model dự đoán
+    K: số class
+
+Với One-Hot Encoding, chỉ có một phần tử yi=1, các phần tử còn lại bằng 0.
+Do đó, công thức được rút gọn:
+    L = -log(y^   )
+              true
+
+Nghĩa là Loss chỉ phụ thuộc vào xác suất model dự đoán cho class thực tế.
+
+9.3.4 Điều gì xảy ra nếu model dự đoán sai?
+Model càng tự tin vào class đúng -> Loss càng thấp
+Model càng gán xác suất thấp cho class đúng -> Loss càng cao
+Nếu xác suất class đúng tiến gần 1 -> Loss tiến cần 0
+Nếu xác suất class đúng tiến gần 0 -> Loss tăng rất lớn
+
+9.4.1 Tại sao Cross-Entropy phù hợp với Classification?
+Vì Cross-Entropy khuyến khích model tăng xác suất của class đúng.
+Trong quá trình Training:
+    Neural Network tạo logits
+    Softmax chuyển logits thành xác suất
+    Cross-Entropy tính Loss
+    Backpropagation tính gradient
+    Optimizer cập nhật Weights
+    Lặp lại quá trình
+
+9.4.2 Một kết quả toán học rất quan trọng
+Khi kết hợp Softmax và Cross-Entropy, gradient theo từng logit có dạng rất đơn giản:
+    dL
+    -- = yi^ - yi
+    dzi
+Trong đó:
+    yi^: xác suất dự đoán
+    yi: nhãn thực tế
+
+VD:
+    y^=[0.659,0.242,0.099]
+
+    y=[1,0,0]
+
+Gradient:
+    dL
+    -- = [-0.341, 0.242, 0.099]
+    dz
+
+Ý nghĩa:
+    Logit của Cat nhận gradient âm -> gradient descent có xu hướng tăng logit Cat
+    Logit của Dog và Bird nhận gradient dương -> gradient descent có xu hướng giảm các logits này
+
+Tóm tắt:
+Log Probability: biểu diễn xác suất dứoi dạng log, giúp tính toán ổn định
+Softmax: chuyển logits thành probability distribution
+Cross-Entropy: đo mức độ sai lệch giữa dự đoán và ground truth
+Softmax+Cross-Entropy: tổ hợp phổ biến để training classification models
+
+Liên hệ với LLM: LLM sử dụng logits để tạo phân phối xác suất trên vocabulary. Log probabilities được dùng trong tính toán và đánh giá chuỗi token. Cross-Entropy là 1 thành phần cốt lõi trong quá trình huấn luyện mô hình dự đoán token tiếp theo.
+
