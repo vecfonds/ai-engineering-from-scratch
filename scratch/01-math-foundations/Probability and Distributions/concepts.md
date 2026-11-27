@@ -831,3 +831,13 @@ Joint           Phân phối của nhiều biến đồng thời
 Marginal        Phân phối của 1 biến riêng lẻ
 Conditional     phân phối của một biến khi biết biến khác
 Independence    Hai biến không phụ thuộc xác suất vào nhau
+
+
+8. Central Limit Theorem (CLT) - Định lý giới hạn trung tâm
+Ngay cả khi dữ liệu ban đầu không có phân phối chuẩn (Normal Distribution), trung bình của nhiều mẫu dữ liệu vẫn có xu hướng tuân theo phân phối chuẩn khi kích thước mẫu đủ lớn.
+
+Điều này có ý nghĩa rất lớn trong ML, Data Science, Statistical Inference.
+
+CLT không nói rằng dữ liệu gốc sẽ trở thành phân phối chuẩn. Nó nói rằngphaan phối của các giá trị trung bình sẽ tiến gần đến phân phối chuẩn.
+
+Lưu ý: Sample là 1 tập dữ liệu. Sampling Distribution là phân phối của một thống kê qua nhiều lần lấy mẫu.
